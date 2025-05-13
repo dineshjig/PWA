@@ -1,0 +1,126 @@
+<html lang="en" style="background: #000;">
+
+<head>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background: #fff;
+        }
+
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            /* padding: 20px; */
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #backgroundPicture {
+            position: absolute;
+            align-items: center;
+            width: 410px;
+            height: 725px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #backgroundPicture img {
+            width: 405px;
+            height: 720;
+        }
+
+        #gameFrame {
+            position: relative;
+            z-index: 0;
+            width: 375px;
+            height: 667px;
+            border: none;
+        }
+    </style>
+    <!--  FOR PWA satrt -->
+    <link rel="manifest" href="manifest.json" />
+    <!--  FOR PWA end -->
+
+</head>
+
+<body>
+    <div id="gameContainer">
+        <picture id="backgroundPicture">
+            <source media="(min-width: 0px)" srcset="PhoneFrame.png">
+            <img src="PhoneFrame.png" alt="Background">
+        </picture>
+        <iframe id="gameFrame" src=""></iframe>
+
+    </div>
+
+    <!--  FOR PWA satrt -->
+    <button id="installBtn" style="display: none;">Install App</button>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('Service Worker Registered'));
+            });
+        }
+    </script>
+    <script>
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show your custom install button
+            const installBtn = document.getElementById('installBtn');
+            if (installBtn) installBtn.style.display = 'block';
+
+            installBtn.addEventListener('click', () => {
+                installBtn.style.display = 'none';
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            });
+        });
+    </script>
+
+
+    <!--  FOR PWA end -->
+    <script>
+        function isMobile() {
+            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+        const gameFrame = document.getElementById('gameFrame');
+        const backgroundPicture = document.getElementById('backgroundPicture');
+        const wrapper = document.querySelector('gameWrapper');
+
+        if (isMobile()) {
+
+            gameFrame.src = 'web-mobile/index.html';
+            gameFrame.style.width = "100%";
+            gameFrame.style.height = "100%";
+            backgroundPicture.style.display = "none"; // Hide background on mobile
+            console.log("isMobile");
+        } else {
+            gameFrame.src = 'web-mobile/index.html';
+            console.log("desktop");
+        }
+    </script>
+</body>
+
+</html>
