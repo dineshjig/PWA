@@ -1,116 +1,135 @@
-<!DOCTYPE html>
-<html>
+<html lang="en" style="background: #000;">
 
 <head>
-  <meta charset="utf-8">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background: #fff;
+        }
 
-  <title>Cocos Creator | FullScreenOnMobileWeb</title>
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            /* padding: 20px; */
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
 
-  <!--http://www.html5rocks.com/en/mobile/mobifying/-->
-  <meta name="viewport"
-    content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1,minimal-ui=true" />
+        #backgroundPicture {
+            position: absolute;
+            align-items: center;
+            width: 410px;
+            height: 725px;
+            z-index: 1;
+            pointer-events: none;
+        }
 
-  <!--https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html-->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="format-detection" content="telephone=no">
+        #backgroundPicture img {
+            width: 405px;
+            height: 720;
+        }
 
-  <!-- force webkit on 360 -->
-  <meta name="renderer" content="webkit" />
-  <meta name="force-rendering" content="webkit" />
-  <!-- force edge on IE -->
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="msapplication-tap-highlight" content="no">
-
-  <!-- force full screen on some browser -->
-  <meta name="full-screen" content="yes" />
-  <meta name="x5-fullscreen" content="true" />
-  <meta name="360-fullscreen" content="true" />
-
-  <!--fix fireball/issues/3568 -->
-  <!--<meta name="browsermode" content="application">-->
-  <meta name="x5-page-mode" content="app">
-
-  <!--<link rel="apple-touch-icon" href=".png" />-->
-  <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" type="text/css" href="style.css" />
+        #gameFrame {
+            position: relative;
+            z-index: 0;
+            width: 375px;
+            height: 667px;
+            border: none;
+        }
+    </style>
+    <!--  FOR PWA satrt -->
+    <link rel="manifest" href="manifest.json" />
+    <!--  FOR PWA end -->
 
 </head>
 
 <body>
-
-
-  <div id="GameDiv" cc_exact_fit_screen="true">
-    <div id="Cocos3dGameContainer">
-      <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="99"></canvas>
-      <button id="installBtn"
-        style="  position: fixed; position-area: center; width: 100%; height: 100%;background:0; "></button>
+    <div id="gameContainer">
+        <picture id="backgroundPicture">
+            <source media="(min-width: 0px)" srcset="PhoneFrame.png">
+            <img src="PhoneFrame.png" alt="Background">
+        </picture>
+        <iframe id="gameFrame" src=""></iframe>
 
     </div>
-  </div>
-  <script src="./vconsole.min.js"></script>
-  <script type="text/javascript">
-    // open web debugger console
-    window.VConsole && (window.vConsole = new VConsole());
-  </script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(() => console.log('Service Worker Registered'));
-      });
-    }
-  </script>
-  <!-- Polyfills bundle. -->
 
-  <script src="src/polyfills.bundle.js" charset="utf-8"> </script>
+    <!--  FOR PWA satrt -->
+    <button id="installBtn"
+        style="  position: fixed; position-area: center; width: 100%; height: 100%;background:0;   "></button>
+    <script src="./vconsole.min.js"></script>
+    <script type="text/javascript">
+        // open web debugger console
+        window.VConsole && (window.vConsole = new VConsole());
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('Service Worker Registered'));
+            });
+        }
+    </script>
+    <script>
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            deferredPrompt = e;
 
-
-  <!-- SystemJS support. -->
-  <script src="src/system.bundle.js" charset="utf-8"> </script>
-
-  <!-- Import map -->
-  <script src="src/import-map.json" type="systemjs-importmap" charset="utf-8"> </script>
-
-  <script>
-    System.import('./index.js').catch(function (err) { console.error(err); })
-  </script>
-  <script>
-    let deferredPrompt;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
-      deferredPrompt = e;
-
-      // Show your custom install button
-      if (!document.getElementById('installBtn')) return;
-      const installBtn = document.getElementById('installBtn');
-      // if (installBtn) installBtn.style.display = 'block';
-      if (installBtn) {
-        installBtn.addEventListener('click', () => {
-          installBtn.style.display = 'none';
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            console.log("choiceResult.outcome", choiceResult.outcome);
-
-            if (choiceResult.outcome === 'accepted') {
-              console.log('User accepted the install prompt');
-            } else {
-              if (installBtn) {
-                console.log('installBtn.remove');
-                installBtn.remove();
-              }
-              console.log('User dismissed the install prompt');
+            // Show your custom install button
+            if (!document.getElementById('installBtn')) return;
+            const installBtn = document.getElementById('installBtn');
+            // if (installBtn) installBtn.style.display = 'block';
+            if (installBtn) {
+                installBtn.addEventListener('click', () => {
+                    installBtn.style.display = 'none';
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        } else {
+                            if (installBtn) {
+                                console.log('installBtn.remove');
+                                installBtn.remove();
+                            }
+                            console.log('User dismissed the install prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                });
             }
-            deferredPrompt = null;
-          });
         });
-      }
-    });
-  </script>
+    </script>
 
+
+    <!--  FOR PWA end -->
+    <script>
+        function isMobile() {
+            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+        const gameFrame = document.getElementById('gameFrame');
+        const backgroundPicture = document.getElementById('backgroundPicture');
+        const wrapper = document.querySelector('gameWrapper');
+
+        if (isMobile()) {
+            gameFrame.src = 'web-mobile/index.html';
+            gameFrame.style.width = "100%";
+            gameFrame.style.height = "100%";
+            backgroundPicture.style.display = "none"; // Hide background on mobile
+            console.log("isMobile");
+        } else {
+            gameFrame.src = 'web-mobile/index.html';
+            console.log("desktop");
+        }
+    </script>
 </body>
 
 </html>
