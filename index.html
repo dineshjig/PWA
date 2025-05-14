@@ -45,8 +45,8 @@
     <div id="Cocos3dGameContainer">
       <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="99"></canvas>
       <button id="installBtn"
-        style="  display: none; position: fixed; position-area: center; width: 100%; height: 100%; ">Install
-        App</button>
+        style="  position: fixed; position-area: center; width: 100%; height: 100%;background:0; "></button>
+
     </div>
   </div>
   <script>
@@ -90,6 +90,7 @@
           if (choiceResult.outcome === 'accepted') {
             console.log('User accepted the install prompt');
           } else {
+            if (installBtn) installBtn.style.display = 'block';
             console.log('User dismissed the install prompt');
           }
           deferredPrompt = null;
