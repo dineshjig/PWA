@@ -121,8 +121,9 @@
 
         if (isMobile()) {
             gameFrame.src = 'web-mobile/index.html';
-            // gameFrame.style.width = "100%";
-            // gameFrame.style.height = "100%";
+            gameFrame.style.width = "100%";
+            gameFrame.style.height = "100%";
+            gameFrame.style.alignItems = "center";
             backgroundPicture.style.display = "none"; // Hide background on mobile
             console.log("isMobile");
         } else {
