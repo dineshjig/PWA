@@ -85,25 +85,27 @@
       deferredPrompt = e;
 
       // Show your custom install button
+      if (!document.getElementById('installBtn')) return;
       const installBtn = document.getElementById('installBtn');
       // if (installBtn) installBtn.style.display = 'block';
-
-      installBtn.addEventListener('click', () => {
-        installBtn.style.display = 'none';
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            if (installBtn) {
-              console.log('installBtn.remove');
-              installBtn.remove();
+      if (installBtn) {
+        installBtn.addEventListener('click', () => {
+          installBtn.style.display = 'none';
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            } else {
+              if (installBtn) {
+                console.log('installBtn.remove');
+                installBtn.remove();
+              }
+              console.log('User dismissed the install prompt');
             }
-            console.log('User dismissed the install prompt');
-          }
-          deferredPrompt = null;
+            deferredPrompt = null;
+          });
         });
-      });
+      }
     });
   </script>
 
