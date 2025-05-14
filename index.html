@@ -86,7 +86,7 @@
 
       // Show your custom install button
       const installBtn = document.getElementById('installBtn');
-      if (installBtn) installBtn.style.display = 'block';
+      // if (installBtn) installBtn.style.display = 'block';
 
       installBtn.addEventListener('click', () => {
         installBtn.style.display = 'none';
@@ -95,7 +95,10 @@
           if (choiceResult.outcome === 'accepted') {
             console.log('User accepted the install prompt');
           } else {
-            if (installBtn) installBtn.style.display = 'block';
+            if (installBtn) {
+              console.log('installBtn.remove');
+              installBtn.remove();
+            }
             console.log('User dismissed the install prompt');
           }
           deferredPrompt = null;
