@@ -1,101 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
-
   <title>Cocos Creator | FullScreenOnMobileWeb</title>
 
-  <!--http://www.html5rocks.com/en/mobile/mobifying/-->
-  <meta name="viewport"
-    content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1,minimal-ui=true" />
-
-  <!--https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html-->
+  <!-- Viewport and Meta Setup for Mobile Fullscreen -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
-
-  <!-- force webkit on 360 -->
   <meta name="renderer" content="webkit" />
   <meta name="force-rendering" content="webkit" />
-  <!-- force edge on IE -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="msapplication-tap-highlight" content="no">
-
-  <!-- force full screen on some browser -->
   <meta name="full-screen" content="yes" />
   <meta name="x5-fullscreen" content="true" />
   <meta name="360-fullscreen" content="true" />
-
-  <!--fix fireball/issues/3568 -->
-  <!--<meta name="browsermode" content="application">-->
   <meta name="x5-page-mode" content="app">
 
-  <!--<link rel="apple-touch-icon" href=".png" />-->
-  <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" type="text/css" href="style.css" />
-
 </head>
 
 <body>
-
-
   <div id="GameDiv" cc_exact_fit_screen="true">
     <div id="Cocos3dGameContainer">
       <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="99"></canvas>
     </div>
   </div>
-  <button id="installBtn" style="display: none;">Install App</button>
+
+  <button id="installBtn" style="display:none;">Install App</button>
+
+  <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
-          .then(() => console.log('Service Worker Registered'));
+          .then(() => console.log('✅ Service Worker Registered'))
+          .catch(err => console.error('Service Worker registration failed:', err));
       });
     }
   </script>
-  <!-- Polyfills bundle. -->
 
-  <script src="src/polyfills.bundle.js" charset="utf-8"> </script>
+  <!-- Polyfills and SystemJS -->
+  <script src="src/polyfills.bundle.js" charset="utf-8"></script>
+  <script src="src/system.bundle.js" charset="utf-8"></script>
+  <script src="src/import-map.json" type="systemjs-importmap" charset="utf-8"></script>
 
-
-  <!-- SystemJS support. -->
-  <script src="src/system.bundle.js" charset="utf-8"> </script>
-
-  <!-- Import map -->
-  <script src="src/import-map.json" type="systemjs-importmap" charset="utf-8"> </script>
-
+  <!-- App Entry Point -->
   <script>
-    System.import('./index.js').catch(function (err) { console.error(err); })
+    System.import('./index.js').catch(function (err) { console.error(err); });
   </script>
+
+  <!-- Notifications + PWA Install Prompt -->
   <script>
     let deferredPrompt;
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
-      deferredPrompt = e;
+    window.addEventListener('load', () => {
+      // Handle Notifications
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          showWelcomeNotification();
+        } else if (Notification.permission !== 'denied') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              showWelcomeNotification();
+            }
+          });
+        }
+      }
 
-      // Show your custom install button
-      const installBtn = document.getElementById('installBtn');
-      if (installBtn) installBtn.style.display = 'block';
+      // Handle PWA Install Prompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
 
-      installBtn.addEventListener('click', () => {
-        installBtn.style.display = 'none';
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            console.log('User dismissed the install prompt');
-          }
-          deferredPrompt = null;
+        const installBtn = document.getElementById('installBtn');
+        if (installBtn) installBtn.style.display = 'block';
+
+        installBtn.addEventListener('click', () => {
+          installBtn.style.display = 'none';
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('✅ User accepted the install prompt');
+            } else {
+              console.log('❌ User dismissed the install prompt');
+            }
+            deferredPrompt = null;
+          });
         });
       });
     });
-  </script>
 
+    function showWelcomeNotification() {
+      try {
+        new Notification('Welcome Back!', {
+          body: 'Thanks for visiting again.',
+          icon: '/icons/icon-192.png' // Ensure this icon path exists
+        });
+      } catch (error) {
+        console.warn('Notification failed:', error);
+      }
+    }
+  </script>
 </body>
 
 </html>
