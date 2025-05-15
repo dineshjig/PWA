@@ -108,7 +108,6 @@
 
 
     <!--  FOR PWA end -->
-
     <script>
         function isMobile() {
             return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -116,40 +115,17 @@
         const gameFrame = document.getElementById('gameFrame');
         const backgroundPicture = document.getElementById('backgroundPicture');
         const wrapper = document.querySelector('gameWrapper');
+
         if (isMobile()) {
             gameFrame.src = 'web-mobile/index.html';
             gameFrame.style.width = "100%";
             gameFrame.style.height = "100%";
             backgroundPicture.style.display = "none"; // Hide background on mobile
             console.log("isMobile");
-            const originalHeight = window.innerHeight;
         } else {
             gameFrame.src = 'web-mobile/index.html';
             console.log("desktop");
         }
-    </script>
-    <script>
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
-            e.preventDefault();
-            deferredPrompt = e;
-            // Show your custom install button
-            window.addEventListener('resize', () => {
-                const isKeyboardOpen = window.innerHeight < originalHeight * 0.7;
-                if (isKeyboardOpen) {
-                    // Adjust canvas or UI
-                    console.log("isKeyboardOpen");
-
-                    cc.game.canvas.style.top = '-100px'; // Example adjustment
-                } else {
-                    console.log("isKeyboardOpen");
-                    cc.game.canvas.style.top = '0px'; // Reset
-                }
-            });
-
-        });
-
     </script>
 </body>
 
