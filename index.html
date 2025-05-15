@@ -132,7 +132,7 @@
 
         const originalHeight = window.innerHeight;
         window.addEventListener("resize", () => {
-            const gameFrame = document.getElementById('gameFrame');
+            const gameFrame = document.getElementById('gameContainer');
             const isKeyboardOpen = window.innerHeight < originalHeight * 0.7;
             if (isKeyboardOpen) {
                 // Adjust canvas or UI
