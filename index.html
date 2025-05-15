@@ -65,11 +65,7 @@
     <!--  FOR PWA satrt -->
     <button id="installBtn"
         style="  position: fixed; position-area: center; width: 100%; height: 100%;background:0;"></button>
-    <script src="./vconsole.min.js"></script>
-    <script type="text/javascript">
-        // open web debugger console
-        window.VConsole && (window.vConsole = new VConsole());
-    </script>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -116,9 +112,24 @@
         function isMobile() {
             return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
+        function isTelegramGameLaunch() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.has('tgWebAppData') || urlParams.has('tgGameQueryId');
+        }
+
+        if (isTelegramGameLaunch()) {
+            console.log("Game launched from Telegram Bot");
+            if (!document.getElementById('installBtn')) return;
+            const installBtn = document.getElementById('installBtn');
+            installBtn.remove();
+            // Add Telegram-specific logic here
+        } else {
+            console.log("Game launched from outside Telegram");
+        }
         const gameFrame = document.getElementById('gameFrame');
         const backgroundPicture = document.getElementById('backgroundPicture');
         const wrapper = document.querySelector('gameWrapper');
+        document.documentElement.requestFullscreen?.();
 
         if (isMobile()) {
             gameFrame.src = 'web-mobile/index.html';
