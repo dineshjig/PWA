@@ -106,20 +106,10 @@
         });
     </script> -->
     <script>
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
-            e.preventDefault();
-            deferredPrompt = e;
-
-            // Show your custom install button
-
-            const gameContainer = document.getElementById('gameContainer');
-
-            window.addEventListener('ContainResize', (e) => {
-                gameContainer.style.top = e.data;
-            });
-
+        // let deferredPrompt;
+        const gameContainer = document.getElementById('gameContainer');
+        window.addEventListener('ContainResize', (e) => {
+            gameContainer.style.top = e.data;
         });
     </script>
 
