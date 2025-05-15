@@ -129,6 +129,10 @@
             console.log("desktop");
         }
 
+
+    </script>
+
+    <script>
         function isTelegramGameLaunch() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.has('tgWebAppData') || urlParams.has('tgGameQueryId');
@@ -142,8 +146,7 @@
             // Add Telegram-specific logic here
         } else {
             console.log("Game launched from outside Telegram");
-        }
-    </script>
+        }</script>
 </body>
 
 </html>
