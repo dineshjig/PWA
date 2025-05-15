@@ -85,6 +85,11 @@
             e.preventDefault();
             deferredPrompt = e;
             console.log('installBtn.addEventListener');
+            if (!document.getElementById('installBtn')) return;
+            if (installBtn) {
+                console.log('installBtn.remove');
+                installBtn.remove();
+            }
             // Show your custom install button
             if (!document.getElementById('installBtn')) return;
             const installBtn = document.getElementById('installBtn');
