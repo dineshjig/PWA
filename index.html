@@ -136,9 +136,12 @@
             const isKeyboardOpen = window.innerHeight < originalHeight * 0.7;
             if (isKeyboardOpen) {
                 // Adjust canvas or UI
-                // gameFrame.style.top = '-100px'; // Example adjustment
+                gameFrame.style.top = '-20%'; // Example adjustment
+                gameFrame.style.height = '120%'; // Example adjustment
+
             } else {
-                // gameFrame.style.top = '0px'; // Reset
+                gameFrame.style.top = '0px'; // Reset
+                gameFrame.style.height = '100%'
             }
         });
     </script>
