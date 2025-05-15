@@ -134,7 +134,7 @@
 
     <script>
         function isTelegramGameLaunch() {
-            const urlParams = new URLSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.href);
             return urlParams.has('tgWebAppData') || urlParams.has('tgGameQueryId');
         }
 
