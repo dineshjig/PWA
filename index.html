@@ -84,7 +84,7 @@
             // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
             deferredPrompt = e;
-
+            console.log('installBtn.addEventListener');
             // Show your custom install button
             if (!document.getElementById('installBtn')) return;
             const installBtn = document.getElementById('installBtn');
