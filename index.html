@@ -37,7 +37,7 @@
             height: 720;
         }
 
-        #myIframe {
+        #gameFrame {
             position: relative;
             z-index: 0;
             width: 375px;
@@ -58,7 +58,7 @@
             <source media="(min-width: 0px)" srcset="PhoneFrame.png">
             <img src="PhoneFrame.png" alt="Background">
         </picture>
-        <iframe id="myIframe" src=""></iframe>
+        <iframe id="gameFrame" src=""></iframe>
 
     </div>
 
@@ -129,18 +129,18 @@
         function isMobile() {
             return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
-        const myIframe = document.getElementById('myIframe');
+        const gameFrame = document.getElementById('gameFrame');
         const backgroundPicture = document.getElementById('backgroundPicture');
         const wrapper = document.querySelector('gameWrapper');
 
         if (isMobile()) {
-            myIframe.src = 'web-mobile/index.html';
-            myIframe.style.width = "100%";
-            myIframe.style.height = "100%";
+            gameFrame.src = 'web-mobile/index.html';
+            gameFrame.style.width = "100%";
+            gameFrame.style.height = "100%";
             backgroundPicture.style.display = "none"; // Hide background on mobile
             console.log("isMobile");
         } else {
-            myIframe.src = 'web-mobile/index.html';
+            gameFrame.src = 'web-mobile/index.html';
             console.log("desktop");
         }
     </script>
