@@ -115,9 +115,11 @@
             // Show your custom install button
 
             const gameContainer = document.getElementById('gameContainer');
-
             window.addEventListener('ContainResize', (e) => {
+                alert("window.addEventListener")
                 gameContainer.style.top = e.data;
+                console.log(e.data);
+
             });
 
         });
