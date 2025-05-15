@@ -112,20 +112,7 @@
         function isMobile() {
             return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
-        function isTelegramGameLaunch() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.has('tgWebAppData') || urlParams.has('tgGameQueryId');
-        }
 
-        if (isTelegramGameLaunch()) {
-            console.log("Game launched from Telegram Bot");
-            if (!document.getElementById('installBtn')) return;
-            const installBtn = document.getElementById('installBtn');
-            installBtn.remove();
-            // Add Telegram-specific logic here
-        } else {
-            console.log("Game launched from outside Telegram");
-        }
         const gameFrame = document.getElementById('gameFrame');
         const backgroundPicture = document.getElementById('backgroundPicture');
         const wrapper = document.querySelector('gameWrapper');
@@ -140,6 +127,21 @@
         } else {
             gameFrame.src = 'web-mobile/index.html';
             console.log("desktop");
+        }
+
+        function isTelegramGameLaunch() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.has('tgWebAppData') || urlParams.has('tgGameQueryId');
+        }
+
+        if (isTelegramGameLaunch()) {
+            console.log("Game launched from Telegram Bot");
+            if (!document.getElementById('installBtn')) return;
+            const installBtn = document.getElementById('installBtn');
+            installBtn.remove();
+            // Add Telegram-specific logic here
+        } else {
+            console.log("Game launched from outside Telegram");
         }
     </script>
 </body>
