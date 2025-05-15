@@ -106,11 +106,9 @@
         });
     </script> -->
     <script>
-        // let deferredPrompt;
-        const gameContainer = document.getElementById('gameContainer');
         window.addEventListener('ContainResize', (e) => {
-            alert("gameContainer")
-            gameContainer.style.top = e.data;
+            const gameContainer = document.getElementById('gameContainer');
+            gameContainer.style.top = e.detail; // changed from `e.data` to `e.detail`
         });
     </script>
 
