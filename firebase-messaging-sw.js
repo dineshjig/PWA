@@ -1,12 +1,15 @@
 importScripts('https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/10.4.0/firebase-messaging.js');
 
+
 firebase.initializeApp({
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID",
+    apiKey: "AIzaSyDfurYNBAcywjd5w4q07TDeta542dZ_lgs",
+    authDomain: "bigdeal-60a02.firebaseapp.com",
+    projectId: "bigdeal-60a02",
+    storageBucket: "bigdeal-60a02.firebasestorage.app",
+    messagingSenderId: "721494038678",
+    appId: "1:721494038678:web:11a83bb80fca06f0058ab7",
+    measurementId: "G-W6CDW2Y339"
 });
 
 const messaging = firebase.messaging();
