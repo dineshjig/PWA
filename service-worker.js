@@ -2,12 +2,11 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(fetch(event.request));
 });
 self.addEventListener('push', function (event) {
-    const data = event.data?.json() || { title: "Default", body: "Push received" };
-
+    const data = event.data.json();
     event.waitUntil(
-        self.registration.showNotification(data.title, {
-            body: data.body,
-            icon: 'icon-192.png'
+        self.registration.showNotification(data.notification.title, {
+            body: data.notification.body,
+            icon: data.notification.icon
         })
     );
 });
