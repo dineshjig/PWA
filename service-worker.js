@@ -1,9 +1,20 @@
 self.addEventListener('fetch', function (event) {
     event.respondWith(fetch(event.request));
 });
-// public/sw.js
 self.addEventListener('push', function (event) {
-    const data = event.data.json();
-    self.registration.showNotification(data.notification.title, data.notification);
+    const data = event.data?.json() || { title: "Default", body: "Push received" };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, {
+            body: data.body,
+            icon: 'icon-192.png'
+        })
+    );
 });
 
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow('/')
+    );
+});
