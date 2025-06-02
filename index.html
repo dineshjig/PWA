@@ -73,12 +73,6 @@
                     .then(() => console.log('Service Worker Registered'));
             });
         }
-        if ('Notification' in window) {
-            Notification.requestPermission().then(permission => {
-                console.log("Permission result:", permission);
-            });
-        }
-
     </script>
     <!-- <script>
         let deferredPrompt;
