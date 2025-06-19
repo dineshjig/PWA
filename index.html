@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" style="background: #ffffff;">
+<html lang="en" style="background: #000;">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Responsive Game Frame</title>
+    <meta charset="UTF-8" />
+    <title>Responsive Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json" />
     <style>
@@ -13,15 +13,11 @@
             padding: 0;
             width: 100vw;
             height: 100vh;
-            background: #000;
             overflow: hidden;
-            /* 🚫 Hide all scrollbars */
+            background: #000;
             overscroll-behavior: none;
-            /* ✅ Prevent scroll bounce on mobile */
             -webkit-overflow-scrolling: auto;
-            /* For safety */
         }
-
 
         #gameContainer {
             width: 100%;
@@ -29,13 +25,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #000;
             overflow: hidden;
-            /* 🔒 Prevent scroll within container */
+            background: #000;
             position: relative;
         }
 
-        /* Desktop, tablet, iPad layout */
+        /* Default: Desktop, iPad, Tablets */
         #gameFrame {
             width: auto;
             height: 100%;
@@ -45,14 +40,14 @@
             background: #000;
         }
 
-        /* Mobile phones only (fullscreen stretch) */
+        /* Mobile Phone Only Layout */
         body.mobile #gameFrame {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             aspect-ratio: auto;
         }
 
-        /* Fallback for older browsers */
+        /* Fallback for old browsers */
         @supports not (aspect-ratio: 1) {
             #gameFrame {
                 width: 360px;
@@ -73,10 +68,9 @@
     </div>
 
     <script>
-        // This detects *only* real mobile phones (not iPad, not Android tablets)
         function isMobilePhoneOnly() {
             const ua = navigator.userAgent;
-            return /Android.*Mobile|iPhone|iPod/i.test(ua);
+            return /Android.*Mobile|iPhone|iPod/i.test(ua); // Excludes iPad & tablets
         }
 
         const gameFrame = document.getElementById('gameFrame');
@@ -84,10 +78,18 @@
 
         if (isMobilePhoneOnly()) {
             document.body.classList.add('mobile');
-            console.log("Layout: Mobile Phone (fullscreen)");
+            console.log("📱 Layout: Mobile Phone Fullscreen");
         } else {
-            console.log("Layout: Desktop / Tablet / iPad (aspect-ratio)");
+            console.log("🖥️ Layout: Tablet/Desktop with Aspect Ratio");
         }
+
+        // Optional fix for iPhone 13 Safari address bar shrinking height
+        window.addEventListener('resize', () => {
+            if (document.body.classList.contains('mobile')) {
+                gameFrame.style.height = `${window.innerHeight}px`;
+                gameFrame.style.width = `${window.innerWidth}px`;
+            }
+        });
     </script>
 </body>
 
