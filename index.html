@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="background: #000;">
+<html lang="en" style="background: #ffffff;">
 
 <head>
     <meta charset="UTF-8">
@@ -11,10 +11,17 @@
         body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: #000;
+            overflow: hidden;
+            /* 🚫 Hide all scrollbars */
+            overscroll-behavior: none;
+            /* ✅ Prevent scroll bounce on mobile */
+            -webkit-overflow-scrolling: auto;
+            /* For safety */
         }
+
 
         #gameContainer {
             width: 100%;
@@ -22,26 +29,39 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
             background: #000;
+            overflow: hidden;
+            /* 🔒 Prevent scroll within container */
+            position: relative;
         }
 
+        /* Desktop, tablet, iPad layout */
         #gameFrame {
             width: auto;
             height: 100%;
             aspect-ratio: 9 / 16;
-            /* Maintains vertical phone screen aspect */
             max-width: 100%;
             border: none;
-            display: block;
-            background: #ffffff;
+            background: #000;
         }
 
-        /* For older browsers that don’t support aspect-ratio */
+        /* Mobile phones only (fullscreen stretch) */
+        body.mobile #gameFrame {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: auto;
+        }
+
+        /* Fallback for older browsers */
         @supports not (aspect-ratio: 1) {
             #gameFrame {
                 width: 360px;
                 height: 640px;
+            }
+
+            body.mobile #gameFrame {
+                width: 100%;
+                height: 100%;
             }
         }
     </style>
@@ -52,28 +72,21 @@
         <iframe id="gameFrame" src=""></iframe>
     </div>
 
-    <!-- Optional: PWA Service Worker Registration -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(() => console.log('Service Worker Registered'));
-            });
-        }
-    </script>
-
-    <script>
-        function isMobile() {
-            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        // This detects *only* real mobile phones (not iPad, not Android tablets)
+        function isMobilePhoneOnly() {
+            const ua = navigator.userAgent;
+            return /Android.*Mobile|iPhone|iPod/i.test(ua);
         }
 
         const gameFrame = document.getElementById('gameFrame');
         gameFrame.src = 'web-mobile/index.html';
 
-        if (isMobile()) {
-            console.log("Mobile browser detected");
+        if (isMobilePhoneOnly()) {
+            document.body.classList.add('mobile');
+            console.log("Layout: Mobile Phone (fullscreen)");
         } else {
-            console.log("Desktop browser detected");
+            console.log("Layout: Desktop / Tablet / iPad (aspect-ratio)");
         }
     </script>
 </body>
