@@ -23,7 +23,8 @@
             top: 0;
             left: 0;
             width: 100vw;
-            height: 100vh;
+            height: 100svh;
+            /* Use small viewport height to account for iOS chrome */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,31 +32,17 @@
             overflow: hidden;
         }
 
-        /* Common game frame style */
         #gameFrame {
-            border: none;
-            background: #000;
-            display: block;
-            max-width: 100vw;
-            max-height: 100vh;
-        }
-
-        /* Mobile-specific behavior */
-        .mobile #gameFrame {
             aspect-ratio: 9 / 16;
             height: 100%;
-        }
-
-        /* Desktop/tablet behavior (example: fixed size, centered) */
-        .desktop #gameFrame {
-            width: 480px;
-            height: 854px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            max-width: 100vw;
+            border: none;
+            display: block;
+            background: #000;
         }
 
         @supports not (aspect-ratio: 1) {
-            .mobile #gameFrame {
+            #gameFrame {
                 width: 360px;
                 height: 640px;
             }
@@ -68,36 +55,26 @@
         <iframe id="gameFrame" src="" allowfullscreen></iframe>
     </div>
 
+    <!-- Optional: PWA Service Worker -->
     <script>
-        function isMobile() {
-            const ua = navigator.userAgent;
-            const width = window.innerWidth;
-            const isPhone = /Android|iPhone|iPod/i.test(ua) && width < 768;
-            return isPhone;
-        }
-
-        const gameFrame = document.getElementById('gameFrame');
-        const htmlTag = document.documentElement;
-        const gameContainer = document.getElementById('gameContainer');
-
-        // Set class based on device
-        if (isMobile()) {
-            htmlTag.classList.add('mobile');
-            htmlTag.classList.remove('desktop');
-        } else {
-            htmlTag.classList.add('desktop');
-            htmlTag.classList.remove('mobile');
-        }
-
-        // Set iframe source
-        gameFrame.src = 'web-mobile/index.html';
-
-        // Optional: PWA Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
                     .then(() => console.log('Service Worker Registered'));
             });
+        }
+
+        const gameFrame = document.getElementById('gameFrame');
+        gameFrame.src = 'web-mobile/index.html';
+
+        function isMobile() {
+            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        if (isMobile()) {
+            console.log("Mobile browser detected");
+        } else {
+            console.log("Desktop browser detected");
         }
     </script>
 </body>
