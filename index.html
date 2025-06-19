@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Responsive Game Frame</title>
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="manifest" href="manifest.json" />
     <style>
         html,
@@ -24,47 +23,41 @@
             top: 0;
             left: 0;
             width: 100vw;
-            height: 100svh;
-            background: #000;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            background: #000;
             overflow: hidden;
         }
 
+        /* Common game frame style */
         #gameFrame {
-            height: 100%;
             border: none;
             background: #000;
             display: block;
-            /* Lock aspect ratio: width will auto-fit to screen width while maintaining 9:16 ratio */
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+
+        /* Mobile-specific behavior */
+        .mobile #gameFrame {
             aspect-ratio: 9 / 16;
-            max-width: 100%;
+            height: 100%;
         }
 
-        /* Fallback for unsupported aspect-ratio browsers */
+        /* Desktop/tablet behavior (example: fixed size, centered) */
+        .desktop #gameFrame {
+            width: 480px;
+            height: 854px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
         @supports not (aspect-ratio: 1) {
-            #gameFrame {
-                width: 100%;
-                height: auto;
-            }
-        }
-
-        /* Hide on tablets and iPads */
-        @media (min-width: 768px) {
-            #gameContainer {
-                display: none;
-            }
-
-            body::before {
-                content: "This game is only available on mobile phones.";
-                color: white;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-family: sans-serif;
-                font-size: 16px;
+            .mobile #gameFrame {
+                width: 360px;
+                height: 640px;
             }
         }
     </style>
@@ -76,28 +69,35 @@
     </div>
 
     <script>
-        // Register service worker (optional for PWA)
+        function isMobile() {
+            const ua = navigator.userAgent;
+            const width = window.innerWidth;
+            const isPhone = /Android|iPhone|iPod/i.test(ua) && width < 768;
+            return isPhone;
+        }
+
+        const gameFrame = document.getElementById('gameFrame');
+        const htmlTag = document.documentElement;
+        const gameContainer = document.getElementById('gameContainer');
+
+        // Set class based on device
+        if (isMobile()) {
+            htmlTag.classList.add('mobile');
+            htmlTag.classList.remove('desktop');
+        } else {
+            htmlTag.classList.add('desktop');
+            htmlTag.classList.remove('mobile');
+        }
+
+        // Set iframe source
+        gameFrame.src = 'web-mobile/index.html';
+
+        // Optional: PWA Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
                     .then(() => console.log('Service Worker Registered'));
             });
-        }
-
-        // Set the iframe source
-        const gameFrame = document.getElementById('gameFrame');
-        gameFrame.src = 'web-mobile/index.html';
-
-        // Optional: Console log for device type
-        function isMobilePhoneOnly() {
-            const ua = navigator.userAgent;
-            return /iPhone|Android.*Mobile|Windows Phone/i.test(ua) && !/iPad|Tablet/i.test(ua);
-        }
-
-        if (!isMobilePhoneOnly()) {
-            console.log("Non-mobile phone detected – game hidden.");
-        } else {
-            console.log("Mobile phone detected – game loaded.");
         }
     </script>
 </body>
