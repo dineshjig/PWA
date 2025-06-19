@@ -1,71 +1,58 @@
+<!DOCTYPE html>
 <html lang="en" style="background: #000;">
 
 <head>
+    <meta charset="UTF-8">
+    <title>Responsive Game Frame</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json" />
     <style>
         html,
         body {
             margin: 0;
             padding: 0;
-            height: 100%;
             width: 100%;
-            background: #fff;
+            height: 100%;
+            background: #000;
         }
 
         #gameContainer {
             width: 100%;
             height: 100%;
-            /* padding: 20px; */
-            box-sizing: border-box;
-            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-        }
-
-        #backgroundPicture {
-            position: absolute;
-            align-items: center;
-            width: 349px;
-            height: 700px;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        #backgroundPicture img {
-            width: 343.4px;
-            height: 700.6px;
+            background: #000;
         }
 
         #gameFrame {
-            position: relative;
-            z-index: 0;
-            width: 318.985px;
-            height: 643.828px;
-            border: none;   
+            width: auto;
+            height: 100%;
+            aspect-ratio: 9 / 16;
+            /* Maintains vertical phone screen aspect */
+            max-width: 100%;
+            border: none;
+            display: block;
+            background: #ffffff;
+        }
+
+        /* For older browsers that don’t support aspect-ratio */
+        @supports not (aspect-ratio: 1) {
+            #gameFrame {
+                width: 360px;
+                height: 640px;
+            }
         }
     </style>
-    <!--  FOR PWA satrt -->
-    <link rel="manifest" href="manifest.json" />
-    <!--  FOR PWA end -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 </head>
 
 <body>
     <div id="gameContainer">
-        <picture id="backgroundPicture">
-            <source media="(min-width: 0px)" srcset="PhoneFrame.png">
-            <img src="PhoneFrame.png" alt="Background">
-        </picture>
         <iframe id="gameFrame" src=""></iframe>
-
     </div>
 
-    <!--  FOR PWA satrt -->
-    <!-- <button id="installBtn"
-        style="  position: fixed; position-area: center; width: 100%; height: 100%;background:0;"></button> -->
-
+    <!-- Optional: PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -74,76 +61,20 @@
             });
         }
     </script>
-    <!-- <script>
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
-            e.preventDefault();
-            deferredPrompt = e;
 
-            // Show your custom install button
-            if (!document.getElementById('installBtn')) return;
-            const installBtn = document.getElementById('installBtn');
-            // if (installBtn) installBtn.style.display = 'block';
-            if (installBtn) {
-                installBtn.addEventListener('click', () => {
-                    installBtn.style.display = 'none';
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted the install prompt');
-                        } else {
-                            console.log('User dismissed the install prompt');
-                        }
-                        if (installBtn) {
-                            console.log('installBtn.remove');
-                            installBtn.remove();
-                        }
-                        deferredPrompt = null;
-                    });
-                });
-            }
-        });
-    </script> -->
-    <script>
-
-    </script>
-
-
-    <!--  FOR PWA end -->
     <script>
         function isMobile() {
             return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
+
         const gameFrame = document.getElementById('gameFrame');
-        const backgroundPicture = document.getElementById('backgroundPicture');
-        const wrapper = document.querySelector('gameWrapper');
+        gameFrame.src = 'web-mobile/index.html';
 
         if (isMobile()) {
-            gameFrame.src = 'web-mobile/index.html';
-            gameFrame.style.width = "100%";
-            gameFrame.style.height = "100%";
-            backgroundPicture.style.display = "none"; // Hide background on mobile
-            console.log("isMobile");
+            console.log("Mobile browser detected");
         } else {
-            gameFrame.src = 'web-mobile/index.html';
-            console.log("desktop");
+            console.log("Desktop browser detected");
         }
-
-        // const originalHeight = window.innerHeight;
-        // window.addEventListener("resize", () => {
-        //     const gameFrame = document.getElementById('gameContainer');
-        //     const isKeyboardOpen = window.innerHeight < originalHeight * 0.7;
-        //     if (isKeyboardOpen) {
-        //         // Adjust canvas or UI
-        //         // gameFrame.style.top = '-10%'; // Example adjustment
-        //         // gameFrame.style.height = '110%'; // Example adjustment
-
-        //     } else {
-        //         // gameFrame.style.top = '0px'; // Reset
-        //         // gameFrame.style.height = '100%'
-        //     }
-        // });
     </script>
 </body>
 
