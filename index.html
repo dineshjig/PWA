@@ -2,7 +2,7 @@
 <html lang="en" style="background: #000;">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>Responsive Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json" />
@@ -11,12 +11,9 @@
         body {
             margin: 0;
             padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
             background: #000;
-            overscroll-behavior: none;
-            -webkit-overflow-scrolling: auto;
         }
 
         #gameContainer {
@@ -27,10 +24,9 @@
             align-items: center;
             overflow: hidden;
             background: #000;
-            position: relative;
         }
 
-        /* Default: Desktop, iPad, Tablets */
+        /* Default: Desktop styling */
         #gameFrame {
             width: auto;
             height: 100%;
@@ -40,14 +36,14 @@
             background: #000;
         }
 
-        /* Mobile Phone Only Layout */
+        /* Mobile-specific override */
         body.mobile #gameFrame {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             aspect-ratio: auto;
         }
 
-        /* Fallback for old browsers */
+        /* For old browsers that don't support aspect-ratio */
         @supports not (aspect-ratio: 1) {
             #gameFrame {
                 width: 360px;
@@ -67,29 +63,31 @@
         <iframe id="gameFrame" src=""></iframe>
     </div>
 
+    <!-- Register Service Worker -->
     <script>
-        function isMobilePhoneOnly() {
-            const ua = navigator.userAgent;
-            return /Android.*Mobile|iPhone|iPod/i.test(ua); // Excludes iPad & tablets
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('Service Worker Registered'));
+            });
+        }
+    </script>
+
+    <!-- Device Detection -->
+    <script>
+        function isMobile() {
+            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
 
         const gameFrame = document.getElementById('gameFrame');
         gameFrame.src = 'web-mobile/index.html';
 
-        if (isMobilePhoneOnly()) {
+        if (isMobile()) {
             document.body.classList.add('mobile');
-            console.log("📱 Layout: Mobile Phone Fullscreen");
+            console.log("Mobile layout applied");
         } else {
-            console.log("🖥️ Layout: Tablet/Desktop with Aspect Ratio");
+            console.log("Desktop layout applied");
         }
-
-        // Optional fix for iPhone 13 Safari address bar shrinking height
-        window.addEventListener('resize', () => {
-            if (document.body.classList.contains('mobile')) {
-                gameFrame.style.height = `${window.innerHeight}px`;
-                gameFrame.style.width = `${window.innerWidth}px`;
-            }
-        });
     </script>
 </body>
 
