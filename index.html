@@ -24,7 +24,7 @@
             left: 0;
             width: 100vw;
             height: 100svh;
-            /* Use small viewport height to account for iOS chrome */
+            /* Fix iOS viewport issues */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -40,6 +40,13 @@
             display: block;
             background: #000;
         }
+
+        @supports not (aspect-ratio: 1) {
+            #gameFrame {
+                width: 360px;
+                height: 640px;
+            }
+        }
     </style>
 </head>
 
@@ -48,12 +55,13 @@
         <iframe id="gameFrame" src="" allowfullscreen></iframe>
     </div>
 
-    <!-- Optional: PWA Service Worker -->
     <script>
+        // Register service worker (optional for PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
-                    .then(() => console.log('Service Worker Registered'));
+                    .then(() => console.log('Service Worker Registered'))
+                    .catch(err => console.error('Service Worker Error:', err));
             });
         }
 
@@ -64,11 +72,33 @@
             return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
 
-        if (isMobile()) {
-            console.log("Mobile browser detected");
-        } else {
-            console.log("Desktop browser detected");
+        function setDynamicAspectRatio() {
+            if (!isMobile()) return;
+
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            // Prevent divide by zero
+            if (screenHeight === 0) return;
+
+            const aspectRatio = (screenWidth / screenHeight).toFixed(4);
+            console.log('Screen Width:', screenWidth, 'Height:', screenHeight, 'Aspect Ratio:', aspectRatio);
+
+            // Apply calculated aspect ratio
+            gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
+
+            // Optional: fallback or clamping
+            if (aspectRatio < 0.45) {
+                gameFrame.style.aspectRatio = "9 / 20";
+            } else if (aspectRatio > 0.7) {
+                gameFrame.style.aspectRatio = "16 / 9";
+            }
         }
+
+        // Set ratio on load, resize, and orientation change
+        window.addEventListener('load', setDynamicAspectRatio);
+        window.addEventListener('resize', setDynamicAspectRatio);
+        window.addEventListener('orientationchange', setDynamicAspectRatio);
     </script>
 </body>
 
