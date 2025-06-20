@@ -68,34 +68,45 @@
         const gameFrame = document.getElementById('gameFrame');
         gameFrame.src = 'web-mobile/index.html';
 
+        function isTablet() {
+            const ua = navigator.userAgent.toLowerCase();
+            return (
+                (ua.includes("ipad") ||
+                    (ua.includes("android") && !ua.includes("mobile")) ||
+                    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) // iPad on iOS 13+ masquerades as Mac
+            );
+        }
+
         function isMobile() {
-            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
         }
 
         function setDynamicAspectRatio() {
-            if (!isMobile()) return;
-
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-
-            // Prevent divide by zero
             if (screenHeight === 0) return;
 
             const aspectRatio = (screenWidth / screenHeight).toFixed(4);
-            console.log('Screen Width:', screenWidth, 'Height:', screenHeight, 'Aspect Ratio:', aspectRatio);
+            console.log('Device aspect ratio:', aspectRatio);
 
-            // Apply calculated aspect ratio
-            gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
-
-            // Optional: fallback or clamping
-            if (aspectRatio < 0.45) {
+            if (isTablet()) {
+                console.log("Tablet detected — using 9/20 aspect ratio");
                 gameFrame.style.aspectRatio = "9 / 20";
-            } else if (aspectRatio > 0.7) {
-                gameFrame.style.aspectRatio = "16 / 9";
+                return;
+            }
+
+            if (isMobile()) {
+                // Use screen ratio for mobile phones
+                gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
+
+                if (aspectRatio < 0.45) {
+                    gameFrame.style.aspectRatio = "9 / 20"; // fallback for tall devices
+                } else if (aspectRatio > 0.7) {
+                    gameFrame.style.aspectRatio = "16 / 9"; // fallback for landscape-like phones
+                }
             }
         }
 
-        // Set ratio on load, resize, and orientation change
         window.addEventListener('load', setDynamicAspectRatio);
         window.addEventListener('resize', setDynamicAspectRatio);
         window.addEventListener('orientationchange', setDynamicAspectRatio);
