@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Responsive Game Frame</title>
+    <title>AuctionX</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="manifest" href="manifest.json" />
     <style>
@@ -51,6 +51,18 @@
 </head>
 
 <body>
+    <div id="rotate-warning" style="display:none;">Please rotate your device to portrait mode</div>
+
+    <script>
+        function checkOrientation() {
+            const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+            document.getElementById('rotate-warning').style.display = isPortrait ? 'none' : 'block';
+        }
+
+        window.addEventListener("orientationchange", checkOrientation);
+        window.addEventListener("resize", checkOrientation);
+        checkOrientation();
+    </script>
     <div id="gameContainer">
         <iframe id="gameFrame" src="" allowfullscreen></iframe>
     </div>
