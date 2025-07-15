@@ -78,6 +78,7 @@
         }
 
         const gameFrame = document.getElementById('gameFrame');
+        const gameContainer = document.getElementById('gameContainer');
         gameFrame.src = 'web-mobile/index.html';
 
         function isTablet() {
@@ -113,6 +114,7 @@
 
                 if (aspectRatio < 0.45) {
                     gameFrame.style.aspectRatio = "9 / 20"; // fallback for tall devices
+                    gameContainer.style.background = "#130c20"; // ensure background is black
                 } else if (aspectRatio > 0.7) {
                     gameFrame.style.aspectRatio = "16 / 9"; // fallback for landscape-like phones
                 }
@@ -120,8 +122,8 @@
         }
 
         window.addEventListener('load', setDynamicAspectRatio);
-        //    window.addEventListener('resize', setDynamicAspectRatio);
-        // window.addEventListener('orientationchange', setDynamicAspectRatio);
+        window.addEventListener('resize', setDynamicAspectRatio);
+        window.addEventListener('orientationchange', setDynamicAspectRatio);
     </script>
 </body>
 
