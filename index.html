@@ -104,6 +104,7 @@
 
             if (isTablet()) {
                 console.log("Tablet detected — using 9/20 aspect ratio");
+                gameContainer.style.background = "#130c20";
                 gameFrame.style.aspectRatio = "9 / 20";
                 return;
             }
@@ -111,10 +112,9 @@
             if (isMobile()) {
                 // Use screen ratio for mobile phones
                 gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
-
+                gameContainer.style.background = "#130c20";
                 if (aspectRatio < 0.45) {
                     gameFrame.style.aspectRatio = "9 / 20"; // fallback for tall devices
-                    gameContainer.style.background = "#130c20"; // ensure background is black
                 } else if (aspectRatio > 0.7) {
                     gameFrame.style.aspectRatio = "16 / 9"; // fallback for landscape-like phones
                 }
