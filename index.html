@@ -65,7 +65,7 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 3;
-            max-width: 30vw;
+            max-width: 40vw;
             /* scale relative to device width */
             max-height: 10vh;
             /* ensure it doesn't exceed screen height */
@@ -136,6 +136,7 @@
                     const imageUrl = StaticProperties.apiBaseURL + imagePath;
 
                     const logo = document.getElementById('logo');
+                    const PoweredBy = document.getElementById('PoweredBy');
                     logo.onload = () => {
                         logo.style.display = 'block';
                     };
@@ -157,6 +158,9 @@
         checkOrientation();
 
         const gameFrame = document.getElementById('gameFrame');
+
+        const logo = document.getElementById('logo');
+        const PoweredBy = document.getElementById('PoweredBy');
 
         function isTablet() {
             const ua = navigator.userAgent.toLowerCase();
@@ -184,9 +188,14 @@
                 console.log("Tablet detected — using 9/20 aspect ratio");
                 gameContainer.style.background = "#130c20";
                 gameFrame.style.aspectRatio = "9 / 20";
+                logo.style.height = "10vh";
+                logo.style.width = "40vw";
                 return;
             }
-
+            else {
+                logo.style.height = "5vh";
+                logo.style.width = "20vw";
+            }
             if (isMobile()) {
                 gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
                 gameContainer.style.background = "#130c20";
@@ -195,6 +204,13 @@
                 } else if (aspectRatio > 0.7) {
                     gameFrame.style.aspectRatio = "16 / 9";
                 }
+
+                logo.style.height = "10vh";
+                logo.style.width = "40vw";
+
+            } else {
+                logo.style.height = "5vh";
+                logo.style.width = "20vw";
             }
         }
 
