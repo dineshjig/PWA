@@ -65,7 +65,7 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 3;
-            max-width: 40vw;
+            max-width: 35vw;
             /* scale relative to device width */
             max-height: 10vh;
             /* ensure it doesn't exceed screen height */
@@ -188,13 +188,15 @@
                 console.log("Tablet detected — using 9/20 aspect ratio");
                 gameContainer.style.background = "#130c20";
                 gameFrame.style.aspectRatio = "9 / 20";
-                logo.style.height = "10vh";
-                logo.style.width = "40vw";
+                // logo.style.height = "10vh";
+                // logo.style.width = "40vw";
                 return;
             }
-            else {
-                logo.style.height = "5vh";
-                logo.style.width = "20vw";
+            else if (!isMobile()) {
+                logo.style.height = "6vh";
+                logo.style.width = "12vw";
+                PoweredBy.style.height = "6vh";
+                PoweredBy.style.width = "12vw";
             }
             if (isMobile()) {
                 gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
@@ -205,12 +207,9 @@
                     gameFrame.style.aspectRatio = "16 / 9";
                 }
 
-                logo.style.height = "10vh";
-                logo.style.width = "40vw";
+                //     logo.style.height = "10vh";
+                //     logo.style.width = "50vw";
 
-            } else {
-                logo.style.height = "5vh";
-                logo.style.width = "20vw";
             }
         }
 
