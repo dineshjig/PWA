@@ -6,6 +6,11 @@
     <title>AuctionX</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="manifest" href="manifest.json" />
+    <!-- Preload critical images for instant splash -->
+    <link rel="preload" as="image" href="BackGround.png" />
+    <link rel="preload" as="image" href="PoweredBy.png" />
+    <!-- Optionally preload logo placeholder -->
+    <link rel="preload" as="image" href="" id="logoPreload" />
     <style>
         html,
         body {
@@ -65,9 +70,9 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 3;
-            max-width: 35vw;
+            max-width: 990px;
             /* scale relative to device width */
-            max-height: 10vh;
+            max-height: 10rem;
             /* ensure it doesn't exceed screen height */
             width: auto;
             height: auto;
@@ -100,6 +105,8 @@
         <img id="logo" alt="Auction Logo" />
         <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
         <iframe id="gameFrame" src="" allowfullscreen></iframe>
+        <!-- Loading spinner overlay -->
+
     </div>
 
     <script>
@@ -137,13 +144,24 @@
 
                     const logo = document.getElementById('logo');
                     const PoweredBy = document.getElementById('PoweredBy');
-                    logo.onload = () => {
+                    // Preload logo image for faster display
+                    const logoPreload = new window.Image();
+                    logoPreload.src = imageUrl;
+                    logoPreload.onload = () => {
+                        logo.src = imageUrl;
                         logo.style.display = 'block';
+                        // Hide loading spinner when logo is ready
+                        const spinner = document.getElementById('loadingSpinner');
+                        if (spinner) spinner.style.display = 'none';
                     };
-                    logo.src = imageUrl;
+                    // Show logo placeholder instantly (optional)
+                    logo.style.display = 'none';
                 }
             } catch (error) {
                 console.error("Error loading logo:", error);
+                // Hide spinner even if logo fails
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) spinner.style.display = 'none';
             }
         })();
 
@@ -188,15 +206,18 @@
                 console.log("Tablet detected — using 9/20 aspect ratio");
                 gameContainer.style.background = "#130c20";
                 gameFrame.style.aspectRatio = "9 / 20";
-                // logo.style.height = "10vh";
-                // logo.style.width = "40vw";
+
+                logo.style.height = "3rem";
+                logo.style.width = "165px";
+                PoweredBy.style.height = "3rem";
+                PoweredBy.style.width = "165px";
                 return;
             }
             else if (!isMobile()) {
-                logo.style.height = "6vh";
-                logo.style.width = "12vw";
-                PoweredBy.style.height = "6vh";
-                PoweredBy.style.width = "12vw";
+                // logo.style.height = "10rem";
+                // logo.style.width = "303px";
+                // PoweredBy.style.height = "10rem";
+                // PoweredBy.style.width = "330px";
             }
             if (isMobile()) {
                 gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
@@ -207,9 +228,10 @@
                     gameFrame.style.aspectRatio = "16 / 9";
                 }
 
-                //     logo.style.height = "10vh";
-                //     logo.style.width = "50vw";
-
+                logo.style.height = "3rem";
+                logo.style.width = "165px";
+                PoweredBy.style.height = "3rem";
+                PoweredBy.style.width = "165px";
             }
         }
 
@@ -217,6 +239,10 @@
         window.addEventListener('load', () => {
             setDynamicAspectRatio();
             gameFrame.src = 'web-mobile/index.html';
+            // Show splash and spinner instantly
+            document.getElementById('splashScreen').style.display = 'block';
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) spinner.style.display = 'block';
         });
 
         window.addEventListener('resize', setDynamicAspectRatio);
