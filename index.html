@@ -27,7 +27,7 @@
       }
 
       #logo {
-        width: 90vw !important;
+        width: 60vw !important;
         max-width: 90vw !important;
         left: 50%;
         transform: translateX(-50%);
@@ -42,6 +42,10 @@
         transform: translateX(-50%);
         height: auto;
         max-height: 15vh;
+      }
+
+      #progressBarContainer {
+        width: 80vw !important;
       }
     }
 
@@ -100,12 +104,11 @@
       display: none;
       transform: translateX(-50%);
       z-index: 3;
-      width: 25vw;
+      width: 20vw;
       max-width: 90vw;
       height: auto;
       max-height: 10vh;
       object-fit: contain;
-      display: block;
     }
 
     #PoweredBy {
@@ -128,7 +131,7 @@
       left: 50%;
       top: 80%;
       transform: translate(-50%, 0);
-      width: 30vw;
+      width: 20vw;
       max-width: 90vw;
       height: 4px;
       background: #e0e0e0;
@@ -212,7 +215,7 @@
         progressBar.style.width = `${toPercent}%`;
       }
       function showProgressBar() {
-        progressBarContainer.style.display = "block";
+        progressBarContainer.style.display = "none";
         animateProgressBar(10, 200);
       }
       function hideProgressBar() {
