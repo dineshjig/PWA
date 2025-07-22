@@ -1,262 +1,344 @@
 <!DOCTYPE html>
-<html lang="en" style="background: #000;">
+<html lang="en" style="background: #000">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>AuctionX</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="manifest" href="manifest.json" />
-    <!-- Preload critical images for instant splash -->
-    <link rel="preload" as="image" href="BackGround.png" />
-    <link rel="preload" as="image" href="PoweredBy.png" />
-    <!-- Optionally preload logo placeholder -->
-    <link rel="preload" as="image" href="" id="logoPreload" />
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            background: #000;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            touch-action: none;
-        }
+  <meta charset="UTF-8" />
+  <title>AuctionX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    /* Responsive: Full width for images and iframe on phones */
+    @media (max-width: 600px) {
+      #gameContainer {
+        width: 100vw !important;
+        min-width: 100vw !important;
+        max-width: 100vw !important;
+        background: #130c20 !important;
+      }
 
-        #gameContainer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100svh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #ffffff;
-            overflow: hidden;
-        }
+      #gameFrame,
+      #splashScreen {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100svh !important;
+        max-height: 100svh !important;
+        object-fit: unset !important;
+        display: block !important;
+      }
 
-        #gameFrame {
-            aspect-ratio: 9 / 16;
-            height: 100%;
-            max-width: 100vw;
-            border: none;
-            display: block;
-            background: #000;
-            z-index: 1;
-        }
+      #logo {
+        width: 90vw !important;
+        max-width: 90vw !important;
+        left: 50%;
+        transform: translateX(-50%);
+        height: auto;
+        max-height: 15vh;
+      }
 
-        #splashScreen {
-            position: absolute;
-            aspect-ratio: 9 / 16;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
+      #PoweredBy {
+        width: 40vw !important;
+        max-width: 90vw !important;
+        left: 50%;
+        transform: translateX(-50%);
+        height: auto;
+        max-height: 15vh;
+      }
+    }
 
-            max-width: 100vw;
-            /* scale relative to device width */
-            height: 100%;
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+    }
 
-            /* ensure it doesn't exceed screen height */
-            /* width: auto;
-            height: auto; */
-            /* display: none; */
-            /* Hidden by default, shown after dynamic sizing */
-        }
+    #gameContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100svh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffff;
+      overflow: hidden;
+    }
 
-        #logo,
-        #PoweredBy {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            max-width: 990px;
-            /* scale relative to device width */
-            max-height: 10rem;
-            /* ensure it doesn't exceed screen height */
-            width: auto;
-            height: auto;
-        }
+    #gameFrame {
+      aspect-ratio: 9 / 16;
+      width: 100vw;
+      height: 100svh;
+      max-width: 100vw;
+      max-height: 100svh;
+      border: none;
+      display: block;
+      background: #fff;
+      z-index: 1;
+    }
 
-        #logo {
-            top: 40%;
-            display: none;
-        }
+    #splashScreen {
+      position: absolute;
+      aspect-ratio: 9 / 16;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      width: 100vw;
+      height: 100svh;
+      max-width: 100vw;
+      max-height: 100svh;
+      object-fit: contain;
+      display: block;
+    }
 
-        #PoweredBy {
-            top: 86%;
-        }
+    #logo {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      display: none;
+      transform: translateX(-50%);
+      z-index: 3;
+      width: 35vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      object-fit: contain;
+      display: block;
+    }
 
-        @supports not (aspect-ratio: 1) {
+    #PoweredBy {
+      position: absolute;
+      left: 50%;
+      top: 86%;
+      transform: translateX(-50%);
+      z-index: 3;
+      width: 10vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      object-fit: contain;
+      display: block;
+    }
 
-            #gameFrame {
-                width: 360px;
-                height: 640px;
-            }
-        }
-    </style>
+    /* Add progress bar styles */
+    #progressBarContainer {
+      position: absolute;
+      left: 50%;
+      top: 55%;
+      transform: translate(-50%, 0);
+      width: 20vw;
+      max-width: 90vw;
+      height: 12px;
+      background: #e0e0e0;
+      border-radius: 6px;
+      z-index: 4;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: none;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
+      border-radius: 6px;
+      transition: width 0.4s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 1px 4px rgba(123, 47, 242, 0.15);
+    }
+
+    @supports not (aspect-ratio: 1) {
+      #gameFrame {
+        width: 100vw;
+        height: 100svh;
+      }
+
+      #splashScreen {
+        width: 100vw;
+        height: 100svh;
+      }
+
+      #logo,
+      #PoweredBy {
+        width: 35vw;
+        max-width: 90vw;
+        height: auto;
+        max-height: 10vh;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div id="rotate-warning" style="display:none;">Please rotate your device to portrait mode</div>
+  <div id="rotate-warning" style="display: none">
+    Please rotate your device to portrait mode
+  </div>
 
-    <div id="gameContainer">
-        <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
-        <img id="logo" alt="Auction Logo" />
-        <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
-        <iframe id="gameFrame" src="" allowfullscreen></iframe>
-        <!-- Loading spinner overlay -->
-
+  <div id="gameContainer">
+    <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
+    <img id="logo" alt="Auction Logo" />
+    <div id="progressBarContainer">
+      <div id="progressBar"></div>
     </div>
+    <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
+    <iframe id="gameFrame" src="" allowfullscreen></iframe>
+  </div>
 
-    <script>
-        const StaticProperties = {
-            hostname: '',
-            apiBaseURL: 'https://api.auctionx.dev/',
-        };
+  <script>
+    const StaticProperties = {
+      hostname: "",
+      apiBaseURL: "https://api.auctionx.dev/",
+    };
 
-        const localHosts = ['localhost:3000', '127.0.0.1:3000'];
+    const localHosts = ["localhost:3000", "127.0.0.1:3000"];
 
-        (function detectHostname() {
-            const parsedUrl = new URL(window.location.href);
-            StaticProperties.hostname = parsedUrl.host;
-            if (localHosts.includes(StaticProperties.hostname)) {
-                StaticProperties.hostname = 'tushar.auctionx.dev';
-            } else {
-                StaticProperties.hostname = 'tushar.auctionx.dev';
-            }
-        })();
+    (function detectHostname() {
+      const parsedUrl = new URL(window.location.href);
+      StaticProperties.hostname = parsedUrl.host;
+      if (localHosts.includes(StaticProperties.hostname)) {
+        StaticProperties.hostname = "tushar.auctionx.dev";
+      } else {
+        StaticProperties.hostname = "tushar.auctionx.dev";
+      }
+    })();
 
-        // Load logo dynamically
-        (async function fetchAndSetLogo() {
-            try {
-                const url = `${StaticProperties.apiBaseURL}v1/auction-house/auction-house-id?subdomain=${StaticProperties.hostname}`;
+    // Load logo dynamically
+    (async function fetchAndSetLogo() {
+      const progressBarContainer = document.getElementById("progressBarContainer");
+      const progressBar = document.getElementById("progressBar");
+      function animateProgressBar(toPercent, duration = 400) {
+        progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
+        progressBar.style.width = `${toPercent}%`;
+      }
+      function showProgressBar() {
+        progressBarContainer.style.display = "block";
+        animateProgressBar(10, 200);
+      }
+      function hideProgressBar() {
+        progressBarContainer.style.display = "none";
+        progressBar.style.width = "0%";
+      }
+      try {
+        showProgressBar();
+        animateProgressBar(40, 600);
+        const url = `${StaticProperties.apiBaseURL}v1/auction-house/auction-house-id?subdomain=${StaticProperties.hostname}`;
 
-                const response = await fetch(url);
-                const result = await response.json();
+        const response = await fetch(url);
+        animateProgressBar(70, 600);
+        const result = await response.json();
+        animateProgressBar(90, 400);
+        if (
+          result.success &&
+          result.data?.currentAuctionHouse?.medias?.local_path
+        ) {
+          const imagePath = result.data.currentAuctionHouse.medias.local_path;
+          const imageUrl = StaticProperties.apiBaseURL + imagePath;
 
-                if (
-                    result.success &&
-                    result.data?.currentAuctionHouse?.medias?.local_path
-                ) {
-                    const imagePath = result.data.currentAuctionHouse.medias.local_path;
-                    const imageUrl = StaticProperties.apiBaseURL + imagePath;
+          const logo = document.getElementById("logo");
+          const PoweredBy = document.getElementById("PoweredBy");
+          logo.onload = () => {
+            logo.style.display = "block";
+            animateProgressBar(100, 300);
+            setTimeout(hideProgressBar, 500);
+          };
+          logo.src = imageUrl;
+        } else {
+          hideProgressBar();
+        }
+      } catch (error) {
+        hideProgressBar();
+        console.error("Error loading logo:", error);
+      }
+    })();
 
-                    const logo = document.getElementById('logo');
-                    const PoweredBy = document.getElementById('PoweredBy');
-                    // Preload logo image for faster display
-                    const logoPreload = new window.Image();
-                    logoPreload.src = imageUrl;
-                    logoPreload.onload = () => {
-                        logo.src = imageUrl;
-                        logo.style.display = 'block';
-                        // Hide loading spinner when logo is ready
-                        const spinner = document.getElementById('loadingSpinner');
-                        if (spinner) spinner.style.display = 'none';
-                    };
-                    // Show logo placeholder instantly (optional)
-                    logo.style.display = 'none';
-                }
-            } catch (error) {
-                console.error("Error loading logo:", error);
-                // Hide spinner even if logo fails
-                const spinner = document.getElementById('loadingSpinner');
-                if (spinner) spinner.style.display = 'none';
-            }
-        })();
+    // Orientation and responsive handling
+    function checkOrientation() {
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+      document.getElementById("rotate-warning").style.display = isPortrait
+        ? "none"
+        : "block";
+    }
 
-        // Orientation and responsive handling
-        function checkOrientation() {
-            const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-            document.getElementById('rotate-warning').style.display = isPortrait ? 'none' : 'block';
+    window.addEventListener("orientationchange", checkOrientation);
+    window.addEventListener("resize", checkOrientation);
+    checkOrientation();
+
+    const gameFrame = document.getElementById("gameFrame");
+
+    const logo = document.getElementById("logo");
+    const PoweredBy = document.getElementById("PoweredBy");
+
+    function isTablet() {
+      const ua = navigator.userAgent.toLowerCase();
+      return (
+        ua.includes("ipad") ||
+        (ua.includes("android") && !ua.includes("mobile")) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+      );
+    }
+
+    function isMobile() {
+      return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
+    }
+
+    function setDynamicAspectRatio() {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      if (screenHeight === 0) return;
+
+      const aspectRatio = (screenWidth / screenHeight).toFixed(4);
+      console.log("Device aspect ratio:", aspectRatio);
+      gameContainer.style.background = "#ffffff";
+
+      if (isTablet()) {
+        console.log("Tablet detected — using 9/20 aspect ratio");
+        gameContainer.style.background = "#130c20";
+        gameFrame.style.aspectRatio = "9 / 20";
+        // logo.style.height = "10vh";
+        // logo.style.width = "40vw";
+        return;
+      } else if (!isMobile()) {
+        logo.style.height = "6vh";
+        logo.style.width = "12vw";
+        PoweredBy.style.height = "6vh";
+        PoweredBy.style.width = "12vw";
+      }
+      if (isMobile()) {
+        gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
+        gameContainer.style.background = "#130c20";
+        if (aspectRatio < 0.45) {
+          gameFrame.style.aspectRatio = "9 / 20";
+        } else if (aspectRatio > 0.7) {
+          gameFrame.style.aspectRatio = "16 / 9";
         }
 
-        window.addEventListener("orientationchange", checkOrientation);
-        window.addEventListener("resize", checkOrientation);
-        checkOrientation();
+        //     logo.style.height = "10vh";
+        //     logo.style.width = "50vw";
+      }
+    }
 
-        const gameFrame = document.getElementById('gameFrame');
+    // Load game and hide splash after it's ready
+    window.addEventListener('load', () => {
+      setDynamicAspectRatio();
+      gameFrame.src = 'web-mobile/index.html';
+    });
 
-        const logo = document.getElementById('logo');
-        const PoweredBy = document.getElementById('PoweredBy');
+    window.addEventListener("resize", setDynamicAspectRatio);
+    window.addEventListener("orientationchange", setDynamicAspectRatio);
 
-        function isTablet() {
-            const ua = navigator.userAgent.toLowerCase();
-            return (
-                ua.includes("ipad") ||
-                (ua.includes("android") && !ua.includes("mobile")) ||
-                (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-            );
-        }
-
-        function isMobile() {
-            return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
-        }
-
-        function setDynamicAspectRatio() {
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
-            if (screenHeight === 0) return;
-
-            const aspectRatio = (screenWidth / screenHeight).toFixed(4);
-            console.log('Device aspect ratio:', aspectRatio);
-            gameContainer.style.background = "#ffffff";
-
-            if (isTablet()) {
-                console.log("Tablet detected — using 9/20 aspect ratio");
-                gameContainer.style.background = "#130c20";
-                gameFrame.style.aspectRatio = "9 / 20";
-
-                logo.style.height = "3rem";
-                logo.style.width = "165px";
-                PoweredBy.style.height = "3rem";
-                PoweredBy.style.width = "165px";
-                return;
-            }
-            else if (!isMobile()) {
-                // logo.style.height = "10rem";
-                // logo.style.width = "303px";
-                // PoweredBy.style.height = "10rem";
-                // PoweredBy.style.width = "330px";
-            }
-            if (isMobile()) {
-                gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
-                gameContainer.style.background = "#130c20";
-                if (aspectRatio < 0.45) {
-                    gameFrame.style.aspectRatio = "9 / 20";
-                } else if (aspectRatio > 0.7) {
-                    gameFrame.style.aspectRatio = "16 / 9";
-                }
-
-                logo.style.height = "3rem";
-                logo.style.width = "165px";
-                PoweredBy.style.height = "3rem";
-                PoweredBy.style.width = "165px";
-            }
-        }
-
-        // Load game and hide splash after it's ready
-        window.addEventListener('load', () => {
-            setDynamicAspectRatio();
-            gameFrame.src = 'web-mobile/index.html';
-            // Show splash and spinner instantly
-            document.getElementById('splashScreen').style.display = 'block';
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) spinner.style.display = 'block';
-        });
-
-        window.addEventListener('resize', setDynamicAspectRatio);
-        window.addEventListener('orientationchange', setDynamicAspectRatio);
-
-        // PWA: Register service worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(() => console.log('Service Worker Registered'))
-                    .catch(err => console.error('Service Worker Error:', err));
-            });
-        }
-    </script>
+    // PWA: Register service worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("service-worker.js")
+          .then(() => console.log("Service Worker Registered"))
+          .catch((err) => console.error("Service Worker Error:", err));
+      });
+    }
+  </script>
 </body>
 
 </html>
