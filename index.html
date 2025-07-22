@@ -179,12 +179,12 @@
   </div>
 
   <div id="gameContainer">
-    <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
+    <img id="splashScreen" alt="Auction splashScreen" src="png" />
     <img id="logo" alt="Auction Logo" />
     <div id="progressBarContainer">
       <div id="progressBar"></div>
     </div>
-    <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
+    <img id="PoweredBy" alt="Auction PoweredBy" src="" />
     <iframe id="gameFrame" src="" allowfullscreen></iframe>
   </div>
 
@@ -241,7 +241,7 @@
           const logo = document.getElementById("logo");
           const PoweredBy = document.getElementById("PoweredBy");
           logo.onload = () => {
-            logo.style.display = "block";
+            // logo.style.display = "block";
             animateProgressBar(100, 300);
             setTimeout(hideProgressBar, 500);
           };
