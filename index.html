@@ -27,7 +27,7 @@
       }
 
       #logo {
-        width: 80vw !important;
+        width: 60vw !important;
         max-width: 90vw !important;
         left: 50%;
         transform: translateX(-50%);
@@ -104,7 +104,7 @@
       display: none;
       transform: translateX(-50%);
       z-index: 3;
-      width: 30vw;
+      width: 20vw;
       max-width: 90vw;
       height: auto;
       max-height: 10vh;
@@ -117,12 +117,12 @@
       top: 86%;
       transform: translateX(-50%);
       z-index: 3;
-      width: 15vw;
+      width: 17vw;
       max-width: 90vw;
       height: auto;
       max-height: 10vh;
       object-fit: contain;
-      /* display: block; */
+      display: block;
     }
 
     /* Add progress bar styles */
@@ -179,12 +179,12 @@
   </div>
 
   <div id="gameContainer">
-    <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" style="display: none" />
+    <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
     <img id="logo" alt="Auction Logo" />
     <div id="progressBarContainer">
       <div id="progressBar"></div>
     </div>
-    <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" style="display: none" />
+    <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
     <iframe id="gameFrame" src="" allowfullscreen></iframe>
   </div>
 
@@ -241,7 +241,7 @@
           const logo = document.getElementById("logo");
           const PoweredBy = document.getElementById("PoweredBy");
           logo.onload = () => {
-            // logo.style.display = "block";
+            logo.style.display = "block";
             animateProgressBar(100, 300);
             setTimeout(hideProgressBar, 500);
           };
