@@ -49,6 +49,23 @@
       } */
     }
 
+    @media screen and (orientation:landscape) {
+      body {
+        transform: rotate(90deg);
+        transform-origin: center center;
+        width: 100vh;
+        height: 100vw;
+        overflow: hidden;
+      }
+
+      #gameContainer {
+        transform: rotate(-90deg);
+        transform-origin: center center;
+        width: 100vh;
+        height: 100vw;
+      }
+    }
+
     html,
     body {
       margin: 0;
@@ -184,6 +201,14 @@
       if (baseUrl) {
         window.location.href = baseUrl;
       }
+    }
+  </script>
+  <script>
+    // ✅ Try to request system-level portrait lock (works on mobile browsers that support it)
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock("portrait").catch(err => {
+        console.log("Orientation lock not supported:", err);
+      });
     }
   </script>
 </head>
