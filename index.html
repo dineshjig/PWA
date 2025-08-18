@@ -1,62 +1,371 @@
-<style>
-  #gameFrame {
-    width: 100%;
-    height: 100%;
-    background: black;
-    /* just demo */
-  }
-</style>
+<!DOCTYPE html>
+<html lang="en" style="background: #000">
 
-<div id="gameFrame"></div>
+<head>
+  <meta charset="UTF-8" />
+  <title>AuctionX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    /* Responsive: Full width for images and iframe on phones */
+    @media (max-width: 500px) {
+      /* #gameContainer {
+        width: 100vw !important;
+        min-width: 100vw !important;
+        max-width: 100vw !important;
+        background: #130c20 !important;
+      }
 
-<script>
-  function isTablet() {
-    const ua = navigator.userAgent;
+      #gameFrame,
+      #splashScreen {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100svh !important;
+        max-height: 100svh !important;
+        object-fit: unset !important;
+        display: block !important;
+      } */
 
-    // ✅ iPads (including iPadOS Safari that pretends to be Mac)
-    const isIpad = /iPad/.test(ua) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      #logo {
+        width: 60vw !important;
+        max-width: 90vw !important;
+        left: 50%;
+        transform: translateX(-50%);
+        height: auto;
+        max-height: 15vh;
+      }
 
-    // ✅ Android tablets (Samsung Tab, Lenovo Tab, Nexus tablets, etc.)
-    const isAndroidTablet = /Tablet|Nexus 7|Nexus 10|SM-T|Lenovo|Tab/i.test(ua);
+      #PoweredBy {
+        width: 40vw !important;
+        max-width: 90vw !important;
+        left: 50%;
+        transform: translateX(-50%);
+        height: auto;
+        max-height: 15vh;
+      }
 
-    // ✅ Screen-based fallback (devices wider than 768px but touch capable)
-    const isWideScreen = (Math.min(window.innerWidth, window.innerHeight) >= 768);
+      /* #progressBarContainer {
+        width: 80vw !important;
+      } */
+    }
 
-    return isIpad || isAndroidTablet || isWideScreen;
-  }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+    }
 
-  function isMobile() {
-    const ua = navigator.userAgent;
+    #gameContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100svh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffff;
+      overflow: hidden;
+    }
 
-    // ✅ Foldables often show "Fold" or "Flip"
-    const isFoldable = /Fold|Flip/i.test(ua);
+    #gameFrame {
+      aspect-ratio: 9 / 16;
+      height: 100%;
+      max-width: 100vw;
+      border: none;
+      display: block;
+      background: #000;
+      z-index: 1;
+    }
 
-    return (/Mobi|iPhone|Android/i.test(ua) && !isTablet()) || isFoldable;
-  }
+    #splashScreen {
+      position: absolute;
+      aspect-ratio: 9 / 16;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      /* width: 60vw; */
+      height: 100svh;
+      max-width: 100vw;
+      max-height: 100svh;
+      /* object-fit: contain; */
+      display: block;
+    }
 
-  function applyGameFrameStyle() {
+    #logo {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      display: none;
+      transform: translateX(-50%);
+      z-index: 3;
+      width: 20vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      object-fit: contain;
+    }
+
+    #PoweredBy {
+      position: absolute;
+      left: 50%;
+      top: 86%;
+      transform: translateX(-50%);
+      z-index: 3;
+      width: 17vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Add progress bar styles */
+    #progressBarContainer {
+      position: absolute;
+      left: 50%;
+      top: 80%;
+      transform: translate(-50%, 0);
+      width: 20vw;
+      max-width: 90vw;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      z-index: 4;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: none;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
+      border-radius: 3px;
+      transition: width 0.9s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 1px 4px rgba(123, 47, 242, 0.15);
+    }
+
+    @supports not (aspect-ratio: 1) {
+      #gameFrame {
+        width: 360px;
+        height: 640px;
+      }
+
+      #splashScreen {
+        width: 360px;
+        height: 640px;
+      }
+
+      #logo,
+      #PoweredBy {
+        width: 35vw;
+        max-width: 90vw;
+        height: auto;
+        max-height: 10vh;
+      }
+    }
+  </style>
+  <script>
+    window.addEventListener("callRedirect", function () {
+      redirectToSavedUrl();
+    });
+
+    function redirectToSavedUrl() {
+      const baseUrl = localStorage.getItem("savedBaseUrlParams");
+      // alert(baseUrl);
+      console.log("Redirecting to base URL:", baseUrl);
+
+      if (baseUrl) {
+        window.location.href = baseUrl;
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div id="rotate-warning" style="display: none">
+    Please rotate your device to portrait mode
+  </div>
+
+  <div id="gameContainer">
+    <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
+    <img id="logo" alt="Auction Logo" />
+    <div id="progressBarContainer">
+      <div id="progressBar"></div>
+    </div>
+    <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
+    <iframe id="gameFrame" src="" allowfullscreen></iframe>
+  </div>
+
+  <script>
+    const StaticProperties = {
+      hostname: "",
+      apiBaseURL: "https://api.auctionx.dev/",
+    };
+
+    const localHosts = ["localhost:3000", "127.0.0.1:3000"];
+
+    (function detectHostname() {
+      const parsedUrl = new URL(window.location.href);
+      StaticProperties.hostname = parsedUrl.host;
+      // console.log("parsedUrl", StaticProperties);
+      const baseUrl = `${parsedUrl.origin}`;
+      console.log("window.location  iiii", window.location);
+      // localStorage.setItem("savedBaseUrlParams", baseUrl);
+      const query = window.location.search;
+      if (query && query.includes("token")) {
+        // localStorage.setItem("savedQueryParams", query);
+      }
+      // localStorage.setItem("windowlocation", window.location);
+      // alert(`Detected hostname: ${StaticProperties.host}`);
+      // if (localHosts.includes(StaticProperties.hostname)) {
+      //   StaticProperties.hostname = "tushar.auctionx.dev";
+      // } else {
+      //   StaticProperties.hostname = "tushar.auctionx.dev";
+      // }
+    })();
+
+    // Load logo dynamically
+    (async function fetchAndSetLogo() {
+      const progressBarContainer = document.getElementById("progressBarContainer");
+      const progressBar = document.getElementById("progressBar");
+      function animateProgressBar(toPercent, duration = 400) {
+        progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
+        progressBar.style.width = `${toPercent}%`;
+      }
+      function showProgressBar() {
+        progressBarContainer.style.display = "none";
+        animateProgressBar(10, 200);
+      }
+      function hideProgressBar() {
+        progressBarContainer.style.display = "none";
+        progressBar.style.width = "0%";
+      }
+      try {
+        showProgressBar();
+        animateProgressBar(40, 600);
+        const url = `${StaticProperties.apiBaseURL}v1/auction-house/auction-house-id?subdomain=${StaticProperties.hostname}`;
+
+        const response = await fetch(url);
+        animateProgressBar(70, 600);
+        const result = await response.json();
+        animateProgressBar(90, 400);
+        if (
+          result.success &&
+          result.data?.currentAuctionHouse?.medias?.local_path
+        ) {
+          const imagePath = result.data.currentAuctionHouse.medias.local_path;
+          const imageUrl = StaticProperties.apiBaseURL + imagePath;
+
+          const logo = document.getElementById("logo");
+          const PoweredBy = document.getElementById("PoweredBy");
+          logo.onload = () => {
+            logo.style.display = "block";
+            animateProgressBar(100, 300);
+            setTimeout(hideProgressBar, 500);
+          };
+          logo.src = imageUrl;
+        } else {
+          hideProgressBar();
+        }
+      } catch (error) {
+        hideProgressBar();
+        console.error("Error loading logo:", error);
+      }
+    })();
+
+    // Orientation and responsive handling
+    function checkOrientation() {
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+      document.getElementById("rotate-warning").style.display = isPortrait
+        ? "none"
+        : "block";
+    }
+
+    window.addEventListener("orientationchange", checkOrientation);
+    window.addEventListener("resize", checkOrientation);
+    checkOrientation();
+
     const gameFrame = document.getElementById("gameFrame");
 
-    if (isMobile()) {
-      // 📱 Phones → Full screen
-      gameFrame.style.width = "100%";
-      gameFrame.style.height = "100%";
-      gameFrame.style.aspectRatio = "auto";
-    } else if (isTablet()) {
-      // 📱 Tablets → 9/20 ratio
-      gameFrame.style.width = "100%";
-      gameFrame.style.height = "auto";
-      gameFrame.style.aspectRatio = "9 / 20";
-    } else {
-      // 💻 Desktop → 9/16 ratio
-      gameFrame.style.width = "100%";
-      gameFrame.style.height = "auto";
-      gameFrame.style.aspectRatio = "9 / 16";
-    }
-  }
+    const logo = document.getElementById("logo");
+    const PoweredBy = document.getElementById("PoweredBy");
 
-  // Run on load + resize
-  window.addEventListener("load", applyGameFrameStyle);
-  window.addEventListener("resize", applyGameFrameStyle);
-</script>
+    function isTablet() {
+      const ua = navigator.userAgent.toLowerCase();
+      return (
+        ua.includes("ipad") ||
+        (ua.includes("android") && !ua.includes("mobile")) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+      );
+    }
+
+    function isMobile() {
+      return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
+    }
+
+    function setDynamicAspectRatio() {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      if (screenHeight === 0) return;
+
+      const aspectRatio = (screenWidth / screenHeight).toFixed(4);
+      console.log("Device aspect ratio:", aspectRatio);
+      gameContainer.style.background = "#ffffff";
+
+      if (isTablet()) {
+        console.log("Tablet detected — using 9/20 aspect ratio");
+        gameContainer.style.background = "#130c20";
+        gameFrame.style.aspectRatio = "9 / 20";
+        // logo.style.height = "10vh";
+        // logo.style.width = "40vw";
+        return;
+      }
+      // else if (!isMobile()) {
+      //   logo.style.height = "6vh";
+      //   logo.style.width = "12vw";
+      //   PoweredBy.style.height = "6vh";
+      //   PoweredBy.style.width = "12vw";
+      // }
+      if (isMobile()) {
+        gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
+        gameContainer.style.background = "#130c20";
+        if (aspectRatio < 0.45) {
+          gameFrame.style.aspectRatio = "9 / 20";
+        } else if (aspectRatio > 0.7) {
+          gameFrame.style.aspectRatio = "16 / 9";
+        }
+
+        //     logo.style.height = "10vh";
+        //     logo.style.width = "50vw";
+      }
+    }
+
+    // Load game and hide splash after it's ready
+    window.addEventListener('load', () => {
+      setDynamicAspectRatio();
+      gameFrame.src = 'web-mobile/index.html';
+    });
+
+    window.addEventListener("resize", setDynamicAspectRatio);
+    window.addEventListener("orientationchange", setDynamicAspectRatio);
+
+    // PWA: Register service worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("service-worker.js")
+          .then(() => console.log("Service Worker Registered"))
+          .catch((err) => console.error("Service Worker Error:", err));
+      });
+    }
+  </script>
+</body>
+
+</html>
