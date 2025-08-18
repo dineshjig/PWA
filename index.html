@@ -278,8 +278,10 @@
       }
     }
     function isPortraitCalc() {
+      const screenWidth = window.width;
+      const screenHeight = window.height;
       console.log("Checking orientation...", window.innerHeight, window.innerWidth);
-      alert("Checking orientation... " + window.innerHeight + " " + window.innerWidth);
+      alert("Checking orientation... " + window.innerHeight + " " + window.innerWidth + "" + screenWidth + " " + screenHeight);
       return window.innerHeight >= window.innerWidth;
     }
     window.addEventListener("orientationchange", checkOrientation);
@@ -305,8 +307,11 @@
     }
 
     function setDynamicAspectRatio() {
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
+      const screenWidth2 = window.innerWidth;
+      const screenHeight2 = window.innerHeight;
+      const screenWidth = window.width;
+      const screenHeight = window.height;
+
       if (screenHeight === 0) return;
 
       const aspectRatio = (screenWidth / screenHeight).toFixed(4);
