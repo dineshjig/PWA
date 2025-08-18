@@ -1,63 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" style="background: #ffffff">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
-  <title>AuctionX</title>
+  <title>AuctionX Portrait Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="manifest" href="manifest.json" />
+
+  <!-- Orientation meta tags -->
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
   <style>
-    /* Responsive: Full width for images and iframe on phones */
-    @media (max-width: 500px) {
-      /* #gameContainer {
-        width: 100vw !important;
-        min-width: 100vw !important;
-        max-width: 100vw !important;
-        background: #130c20 !important;
-      }
-
-      #gameFrame,
-      #splashScreen {
-        width: 100vw !important;
-        max-width: 100vw !important;
-        height: 100svh !important;
-        max-height: 100svh !important;
-        object-fit: unset !important;
-        display: block !important;
-      } */
-
-      #logo {
-        width: 60vw !important;
-        max-width: 90vw !important;
-        left: 50%;
-        transform: translateX(-50%);
-        height: auto;
-        max-height: 15vh;
-      }
-
-      #PoweredBy {
-        width: 40vw !important;
-        max-width: 90vw !important;
-        left: 50%;
-        transform: translateX(-50%);
-        height: auto;
-        max-height: 15vh;
-      }
-
-      /* #progressBarContainer {
-        width: 80vw !important;
-      } */
-    }
-
     html,
     body {
       margin: 0;
       padding: 0;
-      background: #fff;
       width: 100%;
       height: 100%;
+      background: #000;
       overflow: hidden;
-      touch-action: none;
     }
 
     #gameContainer {
@@ -65,7 +28,7 @@
       top: 0;
       left: 0;
       width: 100vw;
-      height: 100svh;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -73,6 +36,7 @@
       overflow: hidden;
     }
 
+    /* The game iframe (locked to portrait aspect ratio) */
     #gameFrame {
       aspect-ratio: 9 / 16;
       height: 100%;
@@ -80,199 +44,41 @@
       border: none;
       display: block;
       background: #000;
-      z-index: 1;
     }
 
-    #splashScreen {
-      position: absolute;
-      aspect-ratio: 9 / 16;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      /* width: 60vw; */
-      height: 100svh;
-      max-width: 100vw;
-      max-height: 100svh;
-      /* object-fit: contain; */
-      display: block;
-    }
-
-    #logo {
-      position: absolute;
-      left: 50%;
-      top: 40%;
+    /* Rotate warning overlay */
+    #rotate-warning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      color: #fff;
       display: none;
-      transform: translateX(-50%);
-      z-index: 3;
-      width: 20vw;
-      max-width: 90vw;
-      height: auto;
-      max-height: 10vh;
-      object-fit: contain;
-    }
-
-    #PoweredBy {
-      position: absolute;
-      left: 50%;
-      top: 86%;
-      transform: translateX(-50%);
-      z-index: 3;
-      width: 17vw;
-      max-width: 90vw;
-      height: auto;
-      max-height: 10vh;
-      object-fit: contain;
-      display: block;
-    }
-
-    /* Add progress bar styles */
-    #progressBarContainer {
-      position: absolute;
-      left: 50%;
-      top: 80%;
-      transform: translate(-50%, 0);
-      width: 20vw;
-      max-width: 90vw;
-      height: 4px;
-      background: #e0e0e0;
-      border-radius: 3px;
-      z-index: 4;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      display: none;
-    }
-
-    #progressBar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
-      border-radius: 3px;
-      transition: width 0.9s cubic-bezier(.4, 0, .2, 1);
-      box-shadow: 0 1px 4px rgba(123, 47, 242, 0.15);
-    }
-
-    @supports not (aspect-ratio: 1) {
-      #gameFrame {
-        width: 360px;
-        height: 640px;
-      }
-
-      #splashScreen {
-        width: 360px;
-        height: 640px;
-      }
-
-      #logo,
-      #PoweredBy {
-        width: 35vw;
-        max-width: 90vw;
-        height: auto;
-        max-height: 10vh;
-      }
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      font-family: sans-serif;
+      z-index: 9999;
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
-  <div id="rotate-warning" style="display: none">
-    Please rotate your device to portrait mode
-  </div>
+
+  <div id="rotate-warning">📱 Please rotate your device to portrait mode</div>
 
   <div id="gameContainer">
-    <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
-    <img id="logo" alt="Auction Logo" />
-    <div id="progressBarContainer">
-      <div id="progressBar"></div>
-    </div>
-    <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
-    <iframe id="gameFrame" src="" allowfullscreen></iframe>
+    <iframe id="gameFrame" src="about:blank" allowfullscreen></iframe>
   </div>
 
   <script>
-    const StaticProperties = {
-      hostname: "",
-      apiBaseURL: "https://api.auctionx.dev/",
-    };
-
-    const localHosts = ["localhost:3000", "127.0.0.1:3000"];
-
-    (function detectHostname() {
-      const parsedUrl = new URL(window.location.href);
-      StaticProperties.hostname = parsedUrl.host;
-      // alert(`Detected hostname: ${StaticProperties.host}`);
-      // if (localHosts.includes(StaticProperties.hostname)) {
-      //   StaticProperties.hostname = "tushar.auctionx.dev";
-      // } else {
-      //   StaticProperties.hostname = "tushar.auctionx.dev";
-      // }
-    })();
-
-    // Load logo dynamically
-    (async function fetchAndSetLogo() {
-      const progressBarContainer = document.getElementById("progressBarContainer");
-      const progressBar = document.getElementById("progressBar");
-      function animateProgressBar(toPercent, duration = 400) {
-        progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
-        progressBar.style.width = `${toPercent}%`;
-      }
-      function showProgressBar() {
-        progressBarContainer.style.display = "none";
-        animateProgressBar(10, 200);
-      }
-      function hideProgressBar() {
-        progressBarContainer.style.display = "none";
-        progressBar.style.width = "0%";
-      }
-      try {
-        showProgressBar();
-        animateProgressBar(40, 600);
-        const url = `${StaticProperties.apiBaseURL}v1/auction-house/auction-house-id?subdomain=${StaticProperties.hostname}`;
-
-        const response = await fetch(url);
-        animateProgressBar(70, 600);
-        const result = await response.json();
-        animateProgressBar(90, 400);
-        if (
-          result.success &&
-          result.data?.currentAuctionHouse?.medias?.local_path
-        ) {
-          const imagePath = result.data.currentAuctionHouse.medias.local_path;
-          const imageUrl = StaticProperties.apiBaseURL + imagePath;
-
-          const logo = document.getElementById("logo");
-          const PoweredBy = document.getElementById("PoweredBy");
-          logo.onload = () => {
-            logo.style.display = "block";
-            animateProgressBar(100, 300);
-            setTimeout(hideProgressBar, 500);
-          };
-          logo.src = imageUrl;
-        } else {
-          hideProgressBar();
-        }
-      } catch (error) {
-        hideProgressBar();
-        console.error("Error loading logo:", error);
-      }
-    })();
-
-    // Orientation and responsive handling
-    function checkOrientation() {
-      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-      document.getElementById("rotate-warning").style.display = isPortrait
-        ? "none"
-        : "block";
-    }
-
-    window.addEventListener("orientationchange", checkOrientation);
-    window.addEventListener("resize", checkOrientation);
-    checkOrientation();
-
     const gameFrame = document.getElementById("gameFrame");
+    const warning = document.getElementById("rotate-warning");
 
-    const logo = document.getElementById("logo");
-    const PoweredBy = document.getElementById("PoweredBy");
-
+    // --- Device detection ---
     function isTablet() {
       const ua = navigator.userAgent.toLowerCase();
       return (
@@ -281,67 +87,63 @@
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
       );
     }
-
     function isMobile() {
-      return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
+      return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    // --- Orientation & aspect ratio handling ---
+    function checkOrientation() {
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+
+      if (!isMobile()) {
+        // Desktop → never show warning
+        warning.style.display = "none";
+        return;
+      }
+
+      // Mobile / Tablet
+      if (isPortrait) {
+        warning.style.display = "none";
+      } else {
+        warning.style.display = "flex"; // block game in landscape
+      }
     }
 
     function setDynamicAspectRatio() {
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
-      if (screenHeight === 0) return;
-
-      const aspectRatio = (screenWidth / screenHeight).toFixed(4);
-      console.log("Device aspect ratio:", aspectRatio);
-      gameContainer.style.background = "#ffffff";
-
       if (isTablet()) {
         console.log("Tablet detected — using 9/20 aspect ratio");
-        gameContainer.style.background = "#130c20";
         gameFrame.style.aspectRatio = "9 / 20";
-        // logo.style.height = "10vh";
-        // logo.style.width = "40vw";
-        return;
-      }
-      // else if (!isMobile()) {
-      //   logo.style.height = "6vh";
-      //   logo.style.width = "12vw";
-      //   PoweredBy.style.height = "6vh";
-      //   PoweredBy.style.width = "12vw";
-      // }
-      if (isMobile()) {
-        gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
-        gameContainer.style.background = "#130c20";
-        if (aspectRatio < 0.45) {
-          gameFrame.style.aspectRatio = "9 / 20";
-        } else if (aspectRatio > 0.7) {
-          gameFrame.style.aspectRatio = "16 / 9";
-        }
-
-        //     logo.style.height = "10vh";
-        //     logo.style.width = "50vw";
+      } else {
+        gameFrame.style.aspectRatio = "9 / 16";
       }
     }
 
-    // Load game and hide splash after it's ready
-    window.addEventListener('load', () => {
+    // --- Init ---
+    window.addEventListener("load", () => {
       setDynamicAspectRatio();
-      gameFrame.src = 'web-mobile/index.html';
+      checkOrientation();
+      // load your cocos build here
+      gameFrame.src = "web-mobile/index.html"; // change to your actual build path
     });
 
-    window.addEventListener("resize", setDynamicAspectRatio);
-    window.addEventListener("orientationchange", setDynamicAspectRatio);
+    window.addEventListener("resize", () => {
+      setDynamicAspectRatio();
+      checkOrientation();
+    });
 
-    // PWA: Register service worker
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("service-worker.js")
-          .then(() => console.log("Service Worker Registered"))
-          .catch((err) => console.error("Service Worker Error:", err));
+    window.addEventListener("orientationchange", () => {
+      setDynamicAspectRatio();
+      checkOrientation();
+    });
+
+    // --- Optional: PWA fullscreen orientation lock ---
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock("portrait").catch(err => {
+        console.log("Orientation lock not supported in iframe:", err);
       });
     }
   </script>
+
 </body>
 
 </html>
