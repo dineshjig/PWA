@@ -98,7 +98,13 @@
     }
 
     function setDynamicAspectRatio() {
-      gameFrame.style.aspectRatio = isTablet() ? "9 / 20" : "9 / 16";
+      if (isMobile()) {
+        gameFrame.style.aspectRatio = "auto";   // full stretch
+      } else if (isTablet()) {
+        gameFrame.style.aspectRatio = "9 / 20"; // tablet portrait ratio
+      } else {
+        gameFrame.style.aspectRatio = "9 / 16"; // desktop fallback
+      }
     }
 
     // Auto-lock orientation if allowed
