@@ -1,63 +1,149 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8" />
+  <title>AuctionX Portrait Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-  <title>Cocos Creator | BIG_DEAL</title>
-
-  <!--http://www.html5rocks.com/en/mobile/mobifying/-->
-  <meta name="viewport"
-        content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1,minimal-ui=true"/>
-
-  <!--https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html-->
+  <!-- Orientation meta tags -->
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-  <!-- force webkit on 360 -->
-  <meta name="renderer" content="webkit"/>
-  <meta name="force-rendering" content="webkit"/>
-  <!-- force edge on IE -->
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-  <meta name="msapplication-tap-highlight" content="no">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
 
-  <!-- force full screen on some browser -->
-  <meta name="full-screen" content="yes"/>
-  <meta name="x5-fullscreen" content="true"/>
-  <meta name="360-fullscreen" content="true"/>
+    #gameContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffff;
+      overflow: hidden;
+    }
 
-  <!--fix fireball/issues/3568 -->
-  <!--<meta name="browsermode" content="application.d3b90.js">-->
-  <meta name="x5-page-mode" content="app">
+    /* The game iframe (locked to portrait aspect ratio) */
+    #gameFrame {
+      aspect-ratio: 9 / 16;
+      height: 100%;
+      max-width: 100vw;
+      border: none;
+      display: block;
+      background: #000;
+    }
 
-  <!--<link rel="apple-touch-icon" href=".png" />-->
-  <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
-
-  <link rel="stylesheet" type="text/css" href="style.02f4a.css"/>
-
+    /* Rotate warning overlay */
+    #rotate-warning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      color: #fff;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      font-family: sans-serif;
+      z-index: 9999;
+      text-align: center;
+    }
+  </style>
 </head>
+
 <body>
-  <div id="GameDiv" cc_exact_fit_screen="true">
-      <div id="Cocos3dGameContainer">
-        <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="99"></canvas>
-      </div>
-    </div>
-  
 
-<!-- Polyfills bundle. -->
+  <div id="rotate-warning">📱 Please rotate your device to portrait mode</div>
 
-<script src="src/polyfills.bundle.5adbf.js" charset="utf-8"> </script>
+  <div id="gameContainer">
+    <iframe id="gameFrame" src="about:blank" allowfullscreen></iframe>
+  </div>
 
+  <script>
+    const gameFrame = document.getElementById("gameFrame");
+    const warning = document.getElementById("rotate-warning");
 
-<!-- SystemJS support. -->
-<script src="src/system.bundle.543e6.js" charset="utf-8"> </script>
+    // --- Device detection ---
+    function isTablet() {
+      const ua = navigator.userAgent.toLowerCase();
+      return (
+        ua.includes("ipad") ||
+        (ua.includes("android") && !ua.includes("mobile")) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+      );
+    }
+    function isMobile() {
+      return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
 
-<!-- Import map -->
-<script src="src/import-map.ccc5f.json" type="systemjs-importmap" charset="utf-8"> </script>
+    // --- Orientation & aspect ratio handling ---
+    function checkOrientation() {
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
 
-<script>
-    System.import('./index.539cc.js').catch(function(err) { console.error(err); })
-</script>
+      if (!isMobile()) {
+        // Desktop → never show warning
+        warning.style.display = "none";
+        return;
+      }
+
+      // Mobile / Tablet
+      if (isPortrait) {
+        warning.style.display = "none";
+      } else {
+        warning.style.display = "flex"; // block game in landscape
+      }
+    }
+
+    function setDynamicAspectRatio() {
+      if (isTablet()) {
+        console.log("Tablet detected — using 9/20 aspect ratio");
+        gameFrame.style.aspectRatio = "9 / 20";
+      } else {
+        gameFrame.style.aspectRatio = "9 / 16";
+      }
+    }
+
+    // --- Init ---
+    window.addEventListener("load", () => {
+      setDynamicAspectRatio();
+      checkOrientation();
+      // load your cocos build here
+      gameFrame.src = "web-mobile/index.html"; // change to your actual build path
+    });
+
+    window.addEventListener("resize", () => {
+      setDynamicAspectRatio();
+      checkOrientation();
+    });
+
+    window.addEventListener("orientationchange", () => {
+      setDynamicAspectRatio();
+      checkOrientation();
+    });
+
+    // --- Optional: PWA fullscreen orientation lock ---
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock("portrait").catch(err => {
+        console.log("Orientation lock not supported in iframe:", err);
+      });
+    }
+  </script>
 
 </body>
+
 </html>
