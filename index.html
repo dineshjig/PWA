@@ -28,24 +28,6 @@
       }
     }
 
-    /* ✅ Force portrait mode even if device rotates */
-    @media screen and (orientation:landscape) {
-      body {
-        transform: rotate(90deg);
-        transform-origin: center center;
-        width: 100vh;
-        height: 100vw;
-        overflow: hidden;
-      }
-
-      #gameContainer {
-        transform: rotate(-90deg);
-        transform-origin: center center;
-        width: 100vh;
-        height: 100vw;
-      }
-    }
-
     html,
     body {
       margin: 0;
@@ -120,7 +102,6 @@
       display: block;
     }
 
-    /* Add progress bar styles */
     #progressBarContainer {
       position: absolute;
       left: 50%;
@@ -165,6 +146,24 @@
         max-height: 10vh;
       }
     }
+
+    /* ✅ Orientation lock overlay */
+    #orientation-lock {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      color: white;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 99999;
+      display: none;
+    }
   </style>
   <script>
     window.addEventListener("callRedirect", function () {
@@ -174,22 +173,18 @@
     function redirectToSavedUrl() {
       const baseUrl = localStorage.getItem("savedBaseUrlParams");
       console.log("Redirecting to base URL:", baseUrl);
+
       if (baseUrl) {
         window.location.href = baseUrl;
       }
     }
   </script>
-  <script>
-    // ✅ Try to request system-level portrait lock (works on mobile browsers that support it)
-    if (screen.orientation && screen.orientation.lock) {
-      screen.orientation.lock("portrait").catch(err => {
-        console.log("Orientation lock not supported:", err);
-      });
-    }
-  </script>
 </head>
 
 <body>
+  <!-- ✅ Orientation lock overlay -->
+  <div id="orientation-lock">Please rotate your device to portrait</div>
+
   <div id="gameContainer">
     <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
     <img id="logo" alt="Auction Logo" />
@@ -226,6 +221,7 @@
         progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
         progressBar.style.width = `${toPercent}%`;
       }
+
       function showProgressBar() {
         progressBarContainer.style.display = "none";
         animateProgressBar(10, 200);
@@ -267,7 +263,27 @@
       }
     })();
 
+    // ✅ Orientation and responsive handling
+    function checkOrientation() {
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+      const lockScreen = document.getElementById("orientation-lock");
+      const gameContainer = document.getElementById("gameContainer");
+
+      if (isPortrait) {
+        lockScreen.style.display = "none";
+        gameContainer.style.display = "flex";
+      } else {
+        lockScreen.style.display = "flex";
+        gameContainer.style.display = "none";
+      }
+    }
+
+    window.addEventListener("orientationchange", checkOrientation);
+    window.addEventListener("resize", checkOrientation);
+    checkOrientation();
+
     const gameFrame = document.getElementById("gameFrame");
+
     const logo = document.getElementById("logo");
     const PoweredBy = document.getElementById("PoweredBy");
 
