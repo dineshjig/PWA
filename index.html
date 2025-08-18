@@ -265,7 +265,7 @@
 
     // ✅ Orientation and responsive handling
     function checkOrientation() {
-      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+      const isPortrait = isPortraitCalc();
       const lockScreen = document.getElementById("orientation-lock");
       const gameContainer = document.getElementById("gameContainer");
 
@@ -277,7 +277,11 @@
         gameContainer.style.display = "none";
       }
     }
-
+    function isPortraitCalc() {
+      console.log("Checking orientation...", window.innerHeight, window.innerWidth);
+      alert("Checking orientation... " + window.innerHeight + " " + window.innerWidth);
+      return window.innerHeight >= window.innerWidth;
+    }
     window.addEventListener("orientationchange", checkOrientation);
     window.addEventListener("resize", checkOrientation);
     checkOrientation();
@@ -305,7 +309,7 @@
       const screenHeight = window.innerHeight;
       if (screenHeight === 0) return;
 
-      const aspectRatio = 1;
+      const aspectRatio = (screenWidth / screenHeight).toFixed(4);
       console.log("Device aspect ratio:", aspectRatio);
       gameContainer.style.background = "#ffffff";
 
