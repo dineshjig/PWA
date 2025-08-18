@@ -278,8 +278,8 @@
       }
     }
     function isPortraitCalc() {
-      const screenWidth = window.width;
-      const screenHeight = window.height;
+      const screenWidth = window.outerWidth;
+      const screenHeight = window.outerHeight;
       console.log("Checking orientation...", window.innerHeight, window.innerWidth);
       alert("Checking orientation... " + window.innerHeight + " " + window.innerWidth + "" + screenWidth + " " + screenHeight);
       return window.innerHeight >= window.innerWidth;
