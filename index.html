@@ -99,12 +99,22 @@
 
     function setDynamicAspectRatio() {
       if (isMobile()) {
-        gameFrame.style.aspectRatio = "auto";   // full stretch
+        // 📱 Mobile → full screen stretch
+        gameFrame.style.width = "100%";
+        gameFrame.style.height = "100%";
+        gameFrame.style.aspectRatio = "auto";
       } else if (isTablet()) {
-        gameFrame.style.aspectRatio = "9 / 20"; // tablet portrait ratio
+        // 📱 Tablet → locked ratio
+        gameFrame.style.aspectRatio = "9 / 20";
+        gameFrame.style.width = "100%";
+        gameFrame.style.height = "auto";
       } else {
-        gameFrame.style.aspectRatio = "9 / 16"; // desktop fallback
+        // 💻 Desktop → default ratio
+        gameFrame.style.aspectRatio = "9 / 16";
+        gameFrame.style.width = "100%";
+        gameFrame.style.height = "auto";
       }
+
     }
 
     // Auto-lock orientation if allowed
