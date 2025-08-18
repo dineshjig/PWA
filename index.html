@@ -77,16 +77,27 @@
     const warning = document.getElementById("rotate-warning");
 
     function isTablet() {
-      const ua = navigator.userAgent.toLowerCase();
-      return (
-        ua.includes("ipad") ||
-        (ua.includes("android") && !ua.includes("mobile")) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-      );
+      const ua = navigator.userAgent;
+
+      // ✅ iPads (even iPadOS Safari that pretends to be Mac)
+      const isIpad = /iPad/.test(ua) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+      // ✅ Android tablets (exclude foldables)
+      const isAndroidTablet = /Tablet|Nexus 7|Nexus 10|SM-T|Lenovo|Tab/i.test(ua);
+
+      return isIpad || isAndroidTablet;
     }
+
     function isMobile() {
-      return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const ua = navigator.userAgent;
+
+      // ✅ Foldables often report "Mobi" in UA → keep them as mobile
+      const isFoldable = /Fold|Flip/i.test(ua);
+
+      return ((/Mobi|iPhone|Android/i.test(ua) && !isTablet()) || isFoldable);
     }
+
 
     function checkOrientation() {
       const isPortrait = window.matchMedia("(orientation: portrait)").matches;
@@ -98,7 +109,7 @@
     }
 
     function setDynamicAspectRatio() {
-      if (isMobile()) {
+      if (isMobile() && !isTablet()) {
         // 📱 Mobile → full screen stretch
         gameFrame.style.width = "100%";
         gameFrame.style.height = "100%";
