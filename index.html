@@ -98,11 +98,28 @@
       z-index: 9999;
       text-align: center;
     }
+
+    /* Error message (bottom) */
+    #error-message {
+      position: fixed;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 0, 0, 0.8);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: sans-serif;
+      display: none;
+      z-index: 10000;
+    }
   </style>
 </head>
 
 <body>
   <div id="rotate-warning">📱 Please rotate your device to portrait mode</div>
+  <div id="error-message"></div>
 
   <div id="gameContainer">
     <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
@@ -114,7 +131,7 @@
   <script>
     const gameFrame = document.getElementById("gameFrame");
     const warning = document.getElementById("rotate-warning");
-    const gameContainer = document.getElementById("gameContainer");
+    const errorBox = document.getElementById("error-message");
 
     // Device checks
     function isTablet() {
@@ -156,11 +173,36 @@
       }
     }
 
+    // Show error message
+    function showError(msg) {
+      errorBox.innerText = msg;
+      errorBox.style.display = "block";
+      setTimeout(() => {
+        errorBox.style.display = "none";
+      }, 4000);
+    }
+
+    // Try to lock orientation
+    async function tryLockOrientation() {
+      if (screen.orientation && screen.orientation.lock) {
+        try {
+          await screen.orientation.lock("portrait");
+          console.log("✅ Orientation locked to portrait");
+        } catch (err) {
+          console.warn("⚠️ Orientation lock failed:", err);
+          showError("Auto-rotation lock not allowed. Please stay in portrait.");
+        }
+      } else {
+        console.log("Orientation lock not supported");
+      }
+    }
+
     // Init
     window.addEventListener("load", () => {
       setDynamicAspectRatio();
       checkOrientation();
       gameFrame.src = "web-mobile/index.html"; // your cocos build
+      tryLockOrientation(); // auto-lock
     });
 
     window.addEventListener("resize", () => {
@@ -171,13 +213,6 @@
       setDynamicAspectRatio();
       checkOrientation();
     });
-
-    // PWA fullscreen orientation lock (optional)
-    if (screen.orientation && screen.orientation.lock) {
-      screen.orientation.lock("portrait").catch(err => {
-        console.log("Orientation lock not supported:", err);
-      });
-    }
   </script>
 </body>
 
