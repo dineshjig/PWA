@@ -2,6 +2,174 @@
 <html lang="en" style="background: #000">
 
 <head>
+  <!-- Sleek Loader Overlay -->
+  <style>
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #181828;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.5s cubic-bezier(.4, 0, .2, 1);
+      pointer-events: auto;
+    }
+
+    #loader[aria-hidden="true"] {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #loader-logo {
+      margin-bottom: 32px;
+      width: 120px;
+      height: 120px;
+      background: url('logo.png') center/contain no-repeat;
+      border-radius: 16px;
+      display: none;
+    }
+
+    #loader-bar-track {
+      width: 80vw;
+      max-width: 400px;
+      height: 10px;
+      background: #23233a;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    #loader-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
+      border-radius: 6px;
+      transition: width 0.5s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 1px 4px rgba(123, 47, 242, 0.15);
+    }
+
+    #loader-percent {
+      font-family: system-ui, sans-serif;
+      font-size: 1.1rem;
+      color: #fff;
+      text-align: center;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      user-select: none;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    @media (max-width: 500px) {
+      #loader-bar-track {
+        width: 90vw;
+      }
+
+      #loader-logo {
+        width: 80px;
+        height: 80px;
+      }
+    }
+  </style>
+  <div id="loader" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div id="loader-logo"></div>
+    <div id="loader-percent">0%</div>
+    <div id="loader-bar-track">
+      <div id="loader-bar-fill"></div>
+    </div>
+  </div>
+  <script>
+    // Loader progress logic
+    (function () {
+      const loader = document.getElementById('loader');
+      const fill = document.getElementById('loader-bar-fill');
+      const percent = document.getElementById('loader-percent');
+      let lastProgress = 0, animating = false;
+      function clamp(v) { return Math.max(0, Math.min(100, v | 0)); }
+      function setProgress(p) {
+        p = clamp(p);
+        if (p < lastProgress) p = lastProgress;
+        lastProgress = p;
+        window.__loaderProgress = p;
+        fill.style.width = p + '%';
+        percent.innerText = p + '%';
+        loader.setAttribute('aria-valuenow', p);
+      }
+      window.__setLoadingProgress = function (p) {
+        if (animating) return;
+        requestAnimationFrame(() => setProgress(p));
+      };
+      setProgress(0);
+      // Fallback: hide loader after 10s
+      setTimeout(() => hideLoader(), 10000);
+      function hideLoader() {
+        if (loader.getAttribute('aria-hidden') === 'true') return;
+        loader.setAttribute('aria-hidden', 'true');
+        setTimeout(() => loader.parentNode && loader.parentNode.removeChild(loader), 350);
+      }
+      window.__hideLoader = hideLoader;
+      // Phase A: static file/script loads
+      let phaseA = 0, phaseATotal = 4;
+      function incA() {
+        phaseA++; window.__setLoadingProgress(Math.round(phaseA / phaseATotal * 50));
+      }
+      // settings.json
+      let origFetch = window.fetch;
+      window.fetch = function () {
+        if (arguments[0] && arguments[0].includes('settings.json')) incA();
+        return origFetch.apply(this, arguments);
+      };
+      // <script> and <link>
+      document.querySelectorAll('script,link[rel="stylesheet"]').forEach(function (el) {
+        if (el.src || el.href) {
+          el.addEventListener('load', incA);
+          el.addEventListener('error', incA);
+        }
+      });
+      // Phase B: patch cc.assetManager.loadBundle
+      let phaseBProgress = 60;
+      function patchBundleLoader() {
+        if (window.cc && cc.assetManager && cc.assetManager.loadBundle) {
+          let orig = cc.assetManager.loadBundle;
+          cc.assetManager.loadBundle = function (name, opts, onProgress, onComplete) {
+            let wrappedProgress = function (completed, total) {
+              let p = 60 + Math.round((completed / Math.max(1, total)) * 35);
+              window.__setLoadingProgress(p);
+              if (onProgress) onProgress(completed, total);
+            };
+            return orig.call(this, name, opts, wrappedProgress, onComplete);
+          };
+        }
+      }
+      window.addEventListener('cc-engine-ready', patchBundleLoader);
+      // Phase C: game start
+      function finishLoader() {
+        if (animating) return;
+        animating = true;
+        window.__setLoadingProgress(100);
+        setTimeout(hideLoader, 300);
+      }
+      // Try cc.game events
+      function hookGameStart() {
+        if (window.cc && cc.game) {
+          cc.game.once && cc.game.once('game-inited', finishLoader);
+          cc.game.run && cc.game.run().then(finishLoader).catch(finishLoader);
+        } else {
+          setTimeout(hookGameStart, 200);
+        }
+      }
+      hookGameStart();
+      // Expose for manual use
+      window.__finishLoader = finishLoader;
+    })();
+  </script>
   <meta charset="UTF-8" />
   <title>AuctionX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -177,6 +345,256 @@
 </head>
 
 <body>
+  <!-- Loader Overlay -->
+  <style>
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #181828;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.6s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    #loader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #progress-container {
+      width: 80vw;
+      max-width: 400px;
+      height: 10px;
+      background: #23233a;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
+      border-radius: 6px;
+      transition: width 0.5s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 1px 4px rgba(123, 47, 242, 0.15);
+    }
+
+    #progress-text {
+      font-family: system-ui, sans-serif;
+      font-size: 1.2rem;
+      color: #fff;
+      text-align: center;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 18px;
+      user-select: none;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    @media (max-width: 500px) {
+      #progress-container {
+        width: 90vw;
+      }
+    }
+  </style>
+  <div id="loader" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <span id="progress-text">0%</span>
+    <div id="progress-container">
+      <div id="progress-fill"></div>
+    </div>
+  </div>
+  <script>
+    // Loader progress logic
+    (function () {
+      const loader = document.getElementById('loader');
+      const fill = document.getElementById('progress-fill');
+      const text = document.getElementById('progress-text');
+      let lastProgress = 0, animating = false, fadeStarted = false;
+      function clamp(v) { return Math.max(0, Math.min(100, v | 0)); }
+      function setProgress(p) {
+        p = clamp(p);
+        if (p < lastProgress) p = lastProgress;
+        lastProgress = p;
+        fill.style.width = p + '%';
+        text.innerText = p + '%';
+        loader.setAttribute('aria-valuenow', p);
+      }
+      window.__setLoadingProgress = function (p) {
+        if (animating) return;
+        requestAnimationFrame(() => setProgress(p));
+      };
+      setProgress(0);
+      // Safety: hide loader after 15s
+      setTimeout(() => fadeOutLoader(), 15000);
+      function fadeOutLoader() {
+        if (fadeStarted) return;
+        fadeStarted = true;
+        loader.classList.add('fade-out');
+        loader.setAttribute('aria-hidden', 'true');
+      }
+      loader.addEventListener('transitionend', function (e) {
+        if (fadeStarted && loader.parentNode) loader.parentNode.removeChild(loader);
+      });
+      window.__hideLoader = fadeOutLoader;
+      // --- Phase A: Boot files ---
+      let phaseA = 0, phaseATotal = 5;
+      function incA() {
+        phaseA++; window.__setLoadingProgress(Math.round(phaseA / phaseATotal * 30));
+      }
+      // settings.json
+      let origFetch = window.fetch;
+      window.fetch = function () {
+        if (arguments[0] && arguments[0].includes('settings.json')) incA();
+        return origFetch.apply(this, arguments);
+      };
+      // <script> loads
+      document.querySelectorAll('script').forEach(function (el) {
+        if (el.src) { el.addEventListener('load', incA); el.addEventListener('error', incA); }
+      });
+      // --- Phase B: Asset Bundles ---
+      function patchBundleLoader() {
+        if (window.cc && cc.assetManager && cc.assetManager.loadBundle) {
+          let orig = cc.assetManager.loadBundle;
+          cc.assetManager.loadBundle = function (name, opts, onProgress, onComplete) {
+            let wrappedProgress = function (completed, total) {
+              let p = 30 + Math.round((completed / Math.max(1, total)) * 50);
+              window.__setLoadingProgress(p);
+              if (onProgress) onProgress(completed, total);
+            };
+            return orig.call(this, name, opts, wrappedProgress, onComplete);
+          };
+        }
+      }
+      window.addEventListener('cc-engine-ready', patchBundleLoader);
+      // --- Phase C: API fetches ---
+      let phaseC = 0, phaseCTotal = 3;
+      let apiEndpoints = ['auction-house-id', 'auction-list', 'player-info'];
+      let origFetch2 = window.fetch;
+      window.fetch = function () {
+        let url = arguments[0];
+        if (typeof url === 'string' && apiEndpoints.some(e => url.includes(e))) {
+          let prom = origFetch2.apply(this, arguments);
+          prom.then(() => { phaseC++; window.__setLoadingProgress(80 + Math.round(phaseC / phaseCTotal * 15)); });
+          return prom;
+        }
+        return origFetch2.apply(this, arguments);
+      };
+      // --- Phase D: Scene start ---
+      function finishLoader() {
+        if (animating) return;
+        animating = true;
+        window.__setLoadingProgress(100);
+        setTimeout(fadeOutLoader, 300);
+      }
+      function hookGameStart() {
+        if (window.cc && cc.game) {
+          cc.game.once && cc.game.once('game-inited', finishLoader);
+          cc.director && cc.director.once && cc.director.once('after-scene-launch', finishLoader);
+        } else { setTimeout(hookGameStart, 200); }
+      }
+      hookGameStart();
+      window.__finishLoader = finishLoader;
+    })();
+  </script>
+  <script>
+    // Loader progress logic
+    (function () {
+      const loader = document.getElementById('loader');
+      const fill = document.getElementById('progress-fill');
+      const text = document.getElementById('progress-text');
+      let lastProgress = 0, animating = false;
+      function clamp(v) { return Math.max(0, Math.min(100, v | 0)); }
+      function setProgress(p) {
+        p = clamp(p);
+        if (p < lastProgress) p = lastProgress;
+        lastProgress = p;
+        fill.style.width = p + '%';
+        text.innerText = p + '%';
+        loader.setAttribute('aria-valuenow', p);
+      }
+      window.__setLoadingProgress = function (p) {
+        if (animating) return;
+        requestAnimationFrame(() => setProgress(p));
+      };
+      setProgress(0);
+      // Safety: hide loader after 10s
+      setTimeout(() => hideLoader(), 10000);
+      function hideLoader() {
+        if (loader.getAttribute('aria-hidden') === 'true') return;
+        loader.setAttribute('aria-hidden', 'true');
+        loader.style.opacity = '0';
+        setTimeout(() => loader.parentNode && loader.parentNode.removeChild(loader), 350);
+      }
+      window.__hideLoader = hideLoader;
+      // --- Phase A: Boot files ---
+      let phaseA = 0, phaseATotal = 5;
+      function incA() {
+        phaseA++; window.__setLoadingProgress(Math.round(phaseA / phaseATotal * 30));
+      }
+      // settings.json
+      let origFetch = window.fetch;
+      window.fetch = function () {
+        if (arguments[0] && arguments[0].includes('settings.json')) incA();
+        return origFetch.apply(this, arguments);
+      };
+      // <script> loads
+      document.querySelectorAll('script').forEach(function (el) {
+        if (el.src) { el.addEventListener('load', incA); el.addEventListener('error', incA); }
+      });
+      // --- Phase B: Asset Bundles ---
+      function patchBundleLoader() {
+        if (window.cc && cc.assetManager && cc.assetManager.loadBundle) {
+          let orig = cc.assetManager.loadBundle;
+          cc.assetManager.loadBundle = function (name, opts, onProgress, onComplete) {
+            let wrappedProgress = function (completed, total) {
+              let p = 30 + Math.round((completed / Math.max(1, total)) * 50);
+              window.__setLoadingProgress(p);
+              if (onProgress) onProgress(completed, total);
+            };
+            return orig.call(this, name, opts, wrappedProgress, onComplete);
+          };
+        }
+      }
+      window.addEventListener('cc-engine-ready', patchBundleLoader);
+      // --- Phase C: API fetches ---
+      let phaseC = 0, phaseCTotal = 3;
+      let apiEndpoints = ['auction-house-id', 'auction-list', 'player-info'];
+      let origFetch2 = window.fetch;
+      window.fetch = function () {
+        let url = arguments[0];
+        if (typeof url === 'string' && apiEndpoints.some(e => url.includes(e))) {
+          let prom = origFetch2.apply(this, arguments);
+          prom.then(() => { phaseC++; window.__setLoadingProgress(80 + Math.round(phaseC / phaseCTotal * 15)); });
+          return prom;
+        }
+        return origFetch2.apply(this, arguments);
+      };
+      // --- Phase D: Scene start ---
+      function finishLoader() {
+        if (animating) return;
+        animating = true;
+        window.__setLoadingProgress(100);
+        setTimeout(hideLoader, 300);
+      }
+      function hookGameStart() {
+        if (window.cc && cc.game) {
+          cc.game.once && cc.game.once('game-inited', finishLoader);
+          cc.director && cc.director.once && cc.director.once('after-scene-launch', finishLoader);
+        } else { setTimeout(hookGameStart, 200); }
+      }
+      hookGameStart();
+      window.__finishLoader = finishLoader;
+    })();
+  </script>
   <div id="rotate-warning" style="display: none">
     Please rotate your device to portrait mode
   </div>
