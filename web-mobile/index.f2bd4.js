@@ -1,13 +1,15 @@
-System.register(["./application.43d9b.js"], function (_export, _context) {
+System.register(["./application.fca93.js"], function (_export, _context) {
   "use strict";
 
   var Application, canvas, $p, bcr, application;
+
   function topLevelImport(url) {
     return System["import"](url);
   }
+
   return {
-    setters: [function (_applicationJs) {
-      Application = _applicationJs.Application;
+    setters: [function (_applicationFca93Js) {
+      Application = _applicationFca93Js.Application;
     }],
     execute: function () {
       canvas = document.getElementById('GameCanvas');
