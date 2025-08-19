@@ -12,6 +12,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
+      width: 100%;
       background: #000;
       overflow: hidden;
     }
@@ -26,10 +27,6 @@
     }
 
     #gameFrame {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 9 / 16;
-      /* default (mobile portrait) */
       border: none;
       border-radius: 0;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
@@ -47,50 +44,31 @@
     const gameFrame = document.getElementById("gameFrame");
     const gameContainer = document.getElementById("gameContainer");
 
-    function isMobile() {
-      return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
-    }
-
-    function isTablet() {
-      return /Tablet|iPad|Nexus 7|Nexus 10|KFAPWI/i.test(navigator.userAgent);
-    }
-
-    function setDynamicAspectRatio() {
+    function setDynamicView() {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
-      if (screenHeight === 0) return;
 
-      const aspectRatio = (screenWidth / screenHeight).toFixed(4);
-      console.log("Device aspect ratio:", aspectRatio);
-      gameContainer.style.background = "#130c20";
-
-      // ✅ Desktop & Laptop → Always 16:9
-      if (!isMobile() && !isTablet()) {
+      if (screenHeight > screenWidth) {
+        // 📱 Portrait → Fit full screen
+        gameFrame.style.width = "100%";
+        gameFrame.style.height = "100%";
+        gameFrame.style.aspectRatio = "auto";
+      } else {
+        // 💻 Landscape → Fit inside 16:9
+        gameFrame.style.width = "100%";
+        gameFrame.style.height = "auto";
         gameFrame.style.aspectRatio = "16 / 9";
-        return;
-      }
-
-      // ✅ Tablet → Treat same as Desktop (16:9)
-      if (isTablet()) {
-        gameFrame.style.aspectRatio = "16 / 9";
-        return;
-      }
-
-      // ✅ Mobile → Portrait 9:16 (with fine-tuning)
-      if (isMobile()) {
-        gameFrame.style.aspectRatio = "9 / 16";
-
-        if (aspectRatio < 0.45) {
-          gameFrame.style.aspectRatio = "9 / 20"; // very tall phones
-        } else if (aspectRatio > 0.7) {
-          gameFrame.style.aspectRatio = "16 / 9"; // wide phones in landscape
+        // Ensure it doesn’t exceed container height
+        if (gameFrame.offsetHeight > screenHeight) {
+          gameFrame.style.height = "100%";
+          gameFrame.style.width = "auto";
         }
       }
     }
 
-    window.addEventListener("resize", setDynamicAspectRatio);
-    window.addEventListener("orientationchange", setDynamicAspectRatio);
-    window.addEventListener("load", setDynamicAspectRatio);
+    window.addEventListener("resize", setDynamicView);
+    window.addEventListener("orientationchange", setDynamicView);
+    window.addEventListener("load", setDynamicView);
   </script>
 </body>
 
