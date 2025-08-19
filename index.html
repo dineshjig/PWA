@@ -7,68 +7,215 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="manifest" href="manifest.json" />
   <style>
-    body,
-    html {
+    html,
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
       width: 100%;
-      background: #000;
+      height: 100%;
       overflow: hidden;
+      touch-action: none;
+      background: #fff;
     }
 
     #gameContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100svh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100%;
-      width: 100%;
-      background: #130c20;
+      background: #ffffff;
+      overflow: hidden;
     }
 
-    #gameFrame {
+    /* Frame + Splash same size */
+    #gameFrame,
+    #splashScreen {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100svh;
+      aspect-ratio: 9 / 16;
       border: none;
-      border-radius: 0;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-      background: #fff;
+      display: block;
+      background: #000;
+    }
+
+    #splashScreen {
+      z-index: 2;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #logo {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      transform: translateX(-50%);
+      z-index: 3;
+      width: 20vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      object-fit: contain;
+      display: none;
+    }
+
+    #PoweredBy {
+      position: absolute;
+      left: 50%;
+      top: 86%;
+      transform: translateX(-50%);
+      z-index: 3;
+      width: 17vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    #progressBarContainer {
+      position: absolute;
+      left: 50%;
+      top: 80%;
+      transform: translate(-50%, 0);
+      width: 20vw;
+      max-width: 90vw;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      z-index: 4;
+      overflow: hidden;
+      display: none;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
+      border-radius: 3px;
+      transition: width 0.9s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    @supports not (aspect-ratio: 1) {
+
+      #gameFrame,
+      #splashScreen {
+        width: 360px;
+        height: 640px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div id="gameContainer">
-    <iframe id="gameFrame" src="https://dinesh.auctionx.dev/" allowfullscreen></iframe>
+    <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
+    <img id="logo" alt="Auction Logo" />
+    <div id="progressBarContainer">
+      <div id="progressBar"></div>
+    </div>
+    <img id="PoweredBy" alt="Auction PoweredBy" src="PoweredBy.png" />
+    <iframe id="gameFrame" src="" allowfullscreen></iframe>
   </div>
 
   <script>
-    const gameFrame = document.getElementById("gameFrame");
-    const gameContainer = document.getElementById("gameContainer");
+    const StaticProperties = {
+      hostname: "",
+      apiBaseURL: "https://api.auctionx.dev/",
+    };
 
-    function setDynamicView() {
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
+    (function detectHostname() {
+      const parsedUrl = new URL(window.location.href);
+      StaticProperties.hostname = parsedUrl.host;
+    })();
 
-      if (screenHeight > screenWidth) {
-        // 📱 Portrait → Fit full screen
-        gameFrame.style.width = "100%";
-        gameFrame.style.height = "100%";
-        gameFrame.style.aspectRatio = "auto";
-      } else {
-        // 💻 Landscape → Fit inside 16:9
-        gameFrame.style.width = "100%";
-        gameFrame.style.height = "auto";
-        gameFrame.style.aspectRatio = "16 / 9";
-        // Ensure it doesn’t exceed container height
-        if (gameFrame.offsetHeight > screenHeight) {
-          gameFrame.style.height = "100%";
-          gameFrame.style.width = "auto";
-        }
-      }
+    // Progress Bar handling
+    const progressBarContainer = document.getElementById("progressBarContainer");
+    const progressBar = document.getElementById("progressBar");
+
+    function animateProgressBar(toPercent, duration = 400) {
+      progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
+      progressBar.style.width = `${toPercent}%`;
+    }
+    function showProgressBar() {
+      progressBarContainer.style.display = "block";
+      animateProgressBar(10, 200);
+    }
+    function hideProgressBar() {
+      progressBarContainer.style.display = "none";
+      progressBar.style.width = "0%";
     }
 
-    window.addEventListener("resize", setDynamicView);
-    window.addEventListener("orientationchange", setDynamicView);
-    window.addEventListener("load", setDynamicView);
+    // Fetch Logo
+    (async function fetchAndSetLogo() {
+      try {
+        showProgressBar();
+        animateProgressBar(40, 600);
+        const url = `${StaticProperties.apiBaseURL}v1/auction-house/auction-house-id?subdomain=${StaticProperties.hostname}`;
+
+        const response = await fetch(url);
+        animateProgressBar(70, 600);
+        const result = await response.json();
+        animateProgressBar(90, 400);
+
+        if (result.success && result.data?.currentAuctionHouse?.medias?.local_path) {
+          const imagePath = result.data.currentAuctionHouse.medias.local_path;
+          const imageUrl = StaticProperties.apiBaseURL + imagePath;
+
+          const logo = document.getElementById("logo");
+          logo.onload = () => {
+            logo.style.display = "block";
+            animateProgressBar(100, 300);
+            setTimeout(hideProgressBar, 500);
+          };
+          logo.src = imageUrl;
+        } else {
+          hideProgressBar();
+        }
+      } catch (error) {
+        hideProgressBar();
+        console.error("Error loading logo:", error);
+      }
+    })();
+
+    // Orientation check
+    function checkOrientation() {
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+      document.body.style.display = isPortrait ? "block" : "none";
+    }
+    window.addEventListener("orientationchange", checkOrientation);
+    window.addEventListener("resize", checkOrientation);
+    checkOrientation();
+
+    const gameFrame = document.getElementById("gameFrame");
+    const splash = document.getElementById("splashScreen");
+
+    // Load game and fade out splash
+    window.addEventListener("load", () => {
+      gameFrame.src = "web-mobile/index.html";
+      gameFrame.onload = () => {
+        splash.style.opacity = "0";   // fade out
+        setTimeout(() => splash.style.display = "none", 800); // remove after fade
+      };
+    });
+
+    // Register service worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("service-worker.js")
+          .then(() => console.log("Service Worker Registered"))
+          .catch((err) => console.error("Service Worker Error:", err));
+      });
+    }
   </script>
 </body>
 
