@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="manifest" href="manifest.json" />
   <style>
-    /* Responsive: logo/powered by for phones */
     @media (max-width: 500px) {
       #logo {
         width: 60vw !important;
@@ -52,28 +51,15 @@
       overflow: hidden;
     }
 
-    /* Default: desktop/laptop */
     #gameFrame {
-      aspect-ratio: 16 / 9;
+      aspect-ratio: 9 / 16;
+      /* default */
       height: 100%;
       max-width: 100vw;
       border: none;
       display: block;
       background: #000;
       z-index: 1;
-    }
-
-    /* Mobile override */
-    @media (max-width: 768px) {
-      #gameFrame {
-        aspect-ratio: 9 / 16 !important;
-        height: 100%;
-        max-width: 100vw;
-      }
-
-      #gameContainer {
-        background: #130c20 !important;
-      }
     }
 
     #splashScreen {
@@ -116,7 +102,6 @@
       display: block;
     }
 
-    /* Progress bar */
     #progressBarContainer {
       position: absolute;
       left: 50%;
@@ -162,18 +147,6 @@
       }
     }
   </style>
-  <script>
-    window.addEventListener("callRedirect", function () {
-      redirectToSavedUrl();
-    });
-
-    function redirectToSavedUrl() {
-      const baseUrl = localStorage.getItem("savedBaseUrlParams");
-      if (baseUrl) {
-        window.location.href = baseUrl;
-      }
-    }
-  </script>
 </head>
 
 <body>
@@ -202,7 +175,7 @@
       StaticProperties.hostname = parsedUrl.host;
     })();
 
-    // Load logo dynamically
+    // Logo loader
     (async function fetchAndSetLogo() {
       const progressBarContainer = document.getElementById("progressBarContainer");
       const progressBar = document.getElementById("progressBar");
@@ -230,7 +203,6 @@
           const imagePath = result.data.currentAuctionHouse.medias.local_path;
           const imageUrl = StaticProperties.apiBaseURL + imagePath;
           const logo = document.getElementById("logo");
-          const PoweredBy = document.getElementById("PoweredBy");
           logo.onload = () => {
             logo.style.display = "block";
             animateProgressBar(100, 300);
@@ -258,20 +230,50 @@
     checkOrientation();
 
     const gameFrame = document.getElementById("gameFrame");
+    const gameContainer = document.getElementById("gameContainer");
+
+    function isTablet() {
+      const ua = navigator.userAgent.toLowerCase();
+      return (
+        ua.includes("ipad") ||
+        (ua.includes("android") && !ua.includes("mobile")) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+      );
+    }
 
     function isMobile() {
       return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
     }
 
     function setDynamicAspectRatio() {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      if (screenHeight === 0) return;
+      const aspectRatio = (screenWidth / screenHeight).toFixed(4);
+
       if (isMobile()) {
+        // ✅ Force portrait on mobiles
         gameFrame.style.aspectRatio = "9 / 16";
-      } else {
+        gameContainer.style.background = "#130c20";
+        return;
+      }
+
+      // ✅ Desktop/Tablet keeps previous behavior
+      gameContainer.style.background = "#ffffff";
+      if (isTablet()) {
+        gameContainer.style.background = "#130c20";
+        gameFrame.style.aspectRatio = "9 / 20";
+        return;
+      }
+      if (aspectRatio < 0.45) {
+        gameFrame.style.aspectRatio = "9 / 20";
+      } else if (aspectRatio > 0.7) {
         gameFrame.style.aspectRatio = "16 / 9";
+      } else {
+        gameFrame.style.aspectRatio = `${screenWidth} / ${screenHeight}`;
       }
     }
 
-    // Load game
     window.addEventListener('load', () => {
       setDynamicAspectRatio();
       gameFrame.src = 'web-mobile/index.html';
@@ -280,7 +282,6 @@
     window.addEventListener("resize", setDynamicAspectRatio);
     window.addEventListener("orientationchange", setDynamicAspectRatio);
 
-    // PWA Service Worker
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
