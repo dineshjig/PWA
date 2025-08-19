@@ -7,15 +7,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="manifest" href="manifest.json" />
   <style>
+    /* Responsive: logo/powered by for phones */
+    @media (max-width: 500px) {
+      #logo {
+        width: 60vw !important;
+        max-width: 90vw !important;
+        left: 50%;
+        transform: translateX(-50%);
+        height: auto;
+        max-height: 15vh;
+      }
+
+      #PoweredBy {
+        width: 40vw !important;
+        max-width: 90vw !important;
+        left: 50%;
+        transform: translateX(-50%);
+        height: auto;
+        max-height: 15vh;
+      }
+    }
+
     html,
     body {
       margin: 0;
       padding: 0;
+      background: #fff;
       width: 100%;
       height: 100%;
       overflow: hidden;
       touch-action: none;
-      background: #fff;
     }
 
     #gameContainer {
@@ -31,32 +52,47 @@
       overflow: hidden;
     }
 
-    /* Frame + Splash same size */
-    #gameFrame,
-    #splashScreen {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
+    /* Default: desktop/laptop (changed to 9/16) */
+    #gameFrame {
+      aspect-ratio: 9 / 16;
       height: 100%;
       max-width: 100vw;
-      max-height: 100svh;
-      aspect-ratio: 9 / 16;
       border: none;
       display: block;
       background: #000;
+      z-index: 1;
+    }
+
+    /* Mobile override */
+    @media (max-width: 768px) {
+      #gameFrame {
+        aspect-ratio: 9 / 16 !important;
+        height: 100%;
+        max-width: 100vw;
+      }
+
+      #gameContainer {
+        background: #130c20 !important;
+      }
     }
 
     #splashScreen {
+      position: absolute;
+      aspect-ratio: 9 / 16;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 2;
-      transition: opacity 0.8s ease-out;
+      height: 100svh;
+      max-width: 100vw;
+      max-height: 100svh;
+      display: block;
     }
 
     #logo {
       position: absolute;
       left: 50%;
       top: 40%;
+      display: none;
       transform: translateX(-50%);
       z-index: 3;
       width: 20vw;
@@ -64,7 +100,6 @@
       height: auto;
       max-height: 10vh;
       object-fit: contain;
-      display: none;
     }
 
     #PoweredBy {
@@ -81,6 +116,7 @@
       display: block;
     }
 
+    /* Progress bar */
     #progressBarContainer {
       position: absolute;
       left: 50%;
@@ -92,6 +128,7 @@
       background: #e0e0e0;
       border-radius: 3px;
       z-index: 4;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       overflow: hidden;
       display: none;
     }
@@ -102,20 +139,48 @@
       background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
       border-radius: 3px;
       transition: width 0.9s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 1px 4px rgba(123, 47, 242, 0.15);
     }
 
     @supports not (aspect-ratio: 1) {
+      #gameFrame {
+        width: 360px;
+        height: 640px;
+      }
 
-      #gameFrame,
       #splashScreen {
         width: 360px;
         height: 640px;
       }
+
+      #logo,
+      #PoweredBy {
+        width: 35vw;
+        max-width: 90vw;
+        height: auto;
+        max-height: 10vh;
+      }
     }
   </style>
+  <script>
+    window.addEventListener("callRedirect", function () {
+      redirectToSavedUrl();
+    });
+
+    function redirectToSavedUrl() {
+      const baseUrl = localStorage.getItem("savedBaseUrlParams");
+      if (baseUrl) {
+        window.location.href = baseUrl;
+      }
+    }
+  </script>
 </head>
 
 <body>
+  <div id="rotate-warning" style="display: none">
+    Please rotate your device to portrait mode
+  </div>
+
   <div id="gameContainer">
     <img id="splashScreen" alt="Auction splashScreen" src="BackGround.png" />
     <img id="logo" alt="Auction Logo" />
@@ -137,39 +202,33 @@
       StaticProperties.hostname = parsedUrl.host;
     })();
 
-    // Progress Bar handling
-    const progressBarContainer = document.getElementById("progressBarContainer");
-    const progressBar = document.getElementById("progressBar");
-
-    function animateProgressBar(toPercent, duration = 400) {
-      progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
-      progressBar.style.width = `${toPercent}%`;
-    }
-    function showProgressBar() {
-      progressBarContainer.style.display = "block";
-      animateProgressBar(10, 200);
-    }
-    function hideProgressBar() {
-      progressBarContainer.style.display = "none";
-      progressBar.style.width = "0%";
-    }
-
-    // Fetch Logo
+    // Load logo dynamically
     (async function fetchAndSetLogo() {
+      const progressBarContainer = document.getElementById("progressBarContainer");
+      const progressBar = document.getElementById("progressBar");
+      function animateProgressBar(toPercent, duration = 400) {
+        progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
+        progressBar.style.width = `${toPercent}%`;
+      }
+      function showProgressBar() {
+        progressBarContainer.style.display = "none";
+        animateProgressBar(10, 200);
+      }
+      function hideProgressBar() {
+        progressBarContainer.style.display = "none";
+        progressBar.style.width = "0%";
+      }
       try {
         showProgressBar();
         animateProgressBar(40, 600);
         const url = `${StaticProperties.apiBaseURL}v1/auction-house/auction-house-id?subdomain=${StaticProperties.hostname}`;
-
         const response = await fetch(url);
         animateProgressBar(70, 600);
         const result = await response.json();
         animateProgressBar(90, 400);
-
         if (result.success && result.data?.currentAuctionHouse?.medias?.local_path) {
           const imagePath = result.data.currentAuctionHouse.medias.local_path;
           const imageUrl = StaticProperties.apiBaseURL + imagePath;
-
           const logo = document.getElementById("logo");
           logo.onload = () => {
             logo.style.display = "block";
@@ -186,28 +245,41 @@
       }
     })();
 
-    // Orientation check
+    // Orientation warning
     function checkOrientation() {
       const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-      document.body.style.display = isPortrait ? "block" : "none";
+      document.getElementById("rotate-warning").style.display = isPortrait
+        ? "none"
+        : "block";
     }
     window.addEventListener("orientationchange", checkOrientation);
     window.addEventListener("resize", checkOrientation);
     checkOrientation();
 
     const gameFrame = document.getElementById("gameFrame");
-    const splash = document.getElementById("splashScreen");
 
-    // Load game and fade out splash
-    window.addEventListener("load", () => {
-      gameFrame.src = "web-mobile/index.html";
-      gameFrame.onload = () => {
-        splash.style.opacity = "0";   // fade out
-        setTimeout(() => splash.style.display = "none", 800); // remove after fade
-      };
+    function isMobile() {
+      return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
+    }
+
+    function setDynamicAspectRatio() {
+      if (isMobile()) {
+        gameFrame.style.aspectRatio = "9 / 16";
+      } else {
+        gameFrame.style.aspectRatio = "9 / 16"; // ✅ Desktop now also 9/16
+      }
+    }
+
+    // Load game
+    window.addEventListener('load', () => {
+      setDynamicAspectRatio();
+      gameFrame.src = 'web-mobile/index.html';
     });
 
-    // Register service worker
+    window.addEventListener("resize", setDynamicAspectRatio);
+    window.addEventListener("orientationchange", setDynamicAspectRatio);
+
+    // PWA Service Worker
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
