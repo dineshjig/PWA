@@ -118,6 +118,19 @@
       }
     }
 
+    #video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      width: 20vw;
+      /* 80% of viewport width */
+      height: 20vh;
+      /* 80% of viewport height */
+    }
+
+
     /* Animated Logo letters */
     #LogoText {
       position: absolute;
@@ -671,6 +684,7 @@
     </div>
 
     <img id="logo" alt="Auction Logo" />
+    <video id="video" src="myvideo.mp4" autoplay muted loop></video>
 
     <!-- Animated Powered by text -->
     <div id="PoweredByText">Powered by</div>
@@ -742,23 +756,23 @@
         animateProgressBar(67, 600);
         const result = await response.json();
         animateProgressBar(85, 400);
-        if (result.success && result.data?.currentAuctionHouse?.medias?.local_path) {
-          const imagePath = result.data.currentAuctionHouse.medias.local_path;
-          const imageUrl = StaticProperties.apiBaseURL + imagePath;
-          const logo = document.getElementById("logo");
-          logo.onload = () => {
-            logo.style.display = "block";
-            animateProgressBar(95, 500);
-            // setTimeout(hideProgressBar, 500);
-            // const event = new Event("HideSplashScreen");
-            // window.parent.dispatchEvent(event);
-            // hideAllElements();
+        // if (result.success && result.data?.currentAuctionHouse?.medias?.local_path) {
+        //   const imagePath = result.data.currentAuctionHouse.medias.local_path;
+        //   const imageUrl = StaticProperties.apiBaseURL + imagePath;
+        //   const logo = document.getElementById("logo");
+        //   logo.onload = () => {
+        //     logo.style.display = "block";
+        //     animateProgressBar(95, 500);
+        //     // setTimeout(hideProgressBar, 500);
+        //     // const event = new Event("HideSplashScreen");
+        //     // window.parent.dispatchEvent(event);
+        //     // hideAllElements();
 
-          };
-          logo.src = await imageUrl;
-        } else {
-          hideProgressBar();
-        }
+        //   };
+        //   logo.src = await imageUrl;
+        // } else {
+        //   hideProgressBar();
+        // }
       } catch (error) {
         hideProgressBar();
         console.error("Error loading logo:", error);
@@ -805,6 +819,7 @@
     window.addEventListener("orientationchange", setDynamicAspectRatio);
     // Loader controls
     window.addEventListener("showLoader", () => {
+      if (!StaticProperties.isGameloaded) return;
       const loader = document.getElementById("loadingGif");
       if (loader) loader.style.display = "block";
     });
@@ -854,6 +869,8 @@
           window.parent.document.getElementById("PoweredByText").remove();
         if (window.parent.document.getElementById("LogoText"))
           window.parent.document.getElementById("LogoText").remove();
+        if (window.parent.document.getElementById("video"))
+          window.parent.document.getElementById("video").remove();
         if (!StaticProperties.isGameloaded) {
           const loader = document.getElementById("loadingGif");
           if (loader) loader.style.display = "block";
