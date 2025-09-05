@@ -104,7 +104,8 @@
       transform: translateX(-50%, -30px);
       z-index: 4;
       display: flex;
-      font-size: clamp(16px, 4vw, 80px);
+      font-size: clamp(16px, 4vw, 20px);
+      /* font-size: 20px; */
       font-weight: bold;
       color: white;
       animation: fadeSlide 0.33s forwards;
@@ -123,7 +124,7 @@
       top: 90%;
       left: 50%;
       transform: translateX(-50%);
-      font-size: clamp(24px, 6vw, 120px);
+      font-size: clamp(24px, 6vw, 30px);
       font-weight: bold;
       color: white;
       opacity: 0;
@@ -148,7 +149,7 @@
     }
 
     .x {
-      font-size: clamp(40px, 10vw, 200px);
+      font-size: clamp(40px, 10vw, 50px);
       font-weight: bold;
       background: linear-gradient(45deg, #ff0040, #ff4080, #8b00ff);
       -webkit-background-clip: text;
@@ -715,23 +716,24 @@
       StaticProperties.hostname = parsedUrl.host;
       StaticProperties.hostname = "dinesh.auctionx.dev"; // For testing
     })();
+    function animateProgressBar(toPercent, duration = 400) {
+      progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
+      progressBar.style.width = `${toPercent}%`;
+    }
 
+    function showProgressBar() {
+      progressBarContainer.style.display = "block";
+      animateProgressBar(10, 300);
+    }
+
+    function hideProgressBar() {
+      progressBarContainer.style.display = "none";
+      progressBar.style.width = "0%";
+    }
     // Load logo dynamically
     (async function fetchAndSetLogo() {
       const progressBarContainer = document.getElementById("progressBarContainer");
       const progressBar = document.getElementById("progressBar");
-      function animateProgressBar(toPercent, duration = 400) {
-        progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
-        progressBar.style.width = `${toPercent}%`;
-      }
-      function showProgressBar() {
-        progressBarContainer.style.display = "block";
-        animateProgressBar(10, 300);
-      }
-      function hideProgressBar() {
-        progressBarContainer.style.display = "none";
-        progressBar.style.width = "0%";
-      }
       try {
         showProgressBar();
         animateProgressBar(30, 600);
@@ -754,11 +756,6 @@
 
           };
           logo.src = await imageUrl;
-          // await waitforme(1000);
-          // animateProgressBar(100, 500);
-          // setTimeout(hideProgressBar, 500);
-          // setTimeout(hideAllElements, 550);
-          // hideAllElements();
         } else {
           hideProgressBar();
         }
@@ -815,8 +812,12 @@
     window.addEventListener("hideLoader", async () => {
       if (!StaticProperties.isProgress) {
         await waitforme(500);
-        progressBarContainer.style.display = "none";
-        progressBar.style.width = "0%";
+        // progressBarContainer.style.display = "none";
+        // progressBar.style.width = "0%";
+        animateProgressBar(100, 500);
+        setTimeout(() => {
+          hideProgressBar();
+        }, 500);
         setTimeout(hideAllElements, 550);
         StaticProperties.isGameloaded = true;
       }
