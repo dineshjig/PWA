@@ -40,7 +40,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #ffffff;
+      background: #160223;
       overflow: hidden;
     }
 
@@ -66,6 +66,20 @@
       #gameContainer {
         background: #130c20 !important;
       }
+    }
+
+    #video {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      display: block;
+      transform: translateX(-50%);
+      z-index: 4;
+      width: 60vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 20vh;
+      object-fit: contain;
     }
 
     /* Splash Screen Background (animated) */
@@ -103,12 +117,18 @@
       top: 85%;
       transform: translateX(-50%, -30px);
       z-index: 4;
-      display: flex;
-      font-size: clamp(16px, 4vw, 20px);
+      /* display: flex; */
+      /* font-size: clamp(16px, 4vw, 20px); */
       /* font-size: 20px; */
-      font-weight: bold;
-      color: white;
+      /* font-weight: bold;
+      color: white; */
+      width: 20vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      object-fit: contain;
       animation: fadeSlide 0.33s forwards;
+      /* color: #000000; */
     }
 
     @keyframes fadeSlide {
@@ -252,7 +272,7 @@
       position: relative;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at 50% 50%, #1a1a3e 0%, #1b3957 50%);
+      background: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffffff 50%);
     }
 
     .gradient-blob {
@@ -656,7 +676,7 @@
     <!-- Animated splash screen background -->
     <div id="splashScreen">
       <div class="gradient-container">
-        <div class="gradient-blob blob-1"></div>
+        <!-- <div class="gradient-blob blob-1"></div>
         <div class="gradient-blob blob-2"></div>
         <div class="gradient-blob blob-3"></div>
         <div class="gradient-blob blob-4"></div>
@@ -666,18 +686,18 @@
         <div class="gradient-blob blob-8"></div>
         <div class="gradient-blob blob-9"></div>
         <div class="gradient-blob blob-10"></div>
-        <div class="gradient-blob blob-11"></div>
-        <div class="glow-overlay"></div>
-        <div class="noise-overlay"></div>
+        <div class="gradient-blob blob-11"></div> -->
+        <!-- <div class="glow-overlay"></div>
+        <div class="noise-overlay"></div> -->
       </div>
     </div>
 
-    <img id="logo" alt="Auction Logo" />
-    <!-- <video id="video" src="myvideo.mp4" autoplay muted loop></video> -->
+    <!-- <img id="logo" alt="Auction Logo" /> -->
+    <video id="video" src="Big Deal Without BG.mp4" autoplay muted></video>
 
     <!-- Animated Powered by text -->
-    <div id="PoweredByText">Powered by</div>
-    <div id="LogoText">
+    <!-- <div id="PoweredByText">Powered by</div> -->
+    <!-- <div id="LogoText">
       <span class="x letter">X</span>
       <span class="letter">a</span>
       <span class="letter">u</span>
@@ -687,11 +707,12 @@
       <span class="letter">o</span>
       <span class="letter">n</span>
       <span class="letter">X</span>
-    </div>
+    </div> -->
     <div id="progressBarContainer">
       <div id="progressBar"></div>
     </div>
 
+    <img id="PoweredByText" src="PoweredBy.png" alt="Loading..." />
     <img id="loadingGif" src="LoadingAnim.gif" alt="Loading..." />
     <iframe id="gameFrame" src="" allowfullscreen></iframe>
   </div>
@@ -815,7 +836,7 @@
 
     window.addEventListener("hideLoader", async () => {
       if (!StaticProperties.isProgress) {
-        await waitforme(500);
+        await waitforme(5000);
         // progressBarContainer.style.display = "none";
         // progressBar.style.width = "0%";
         animateProgressBar(100, 500);
@@ -858,8 +879,8 @@
           window.parent.document.getElementById("PoweredByText").remove();
         if (window.parent.document.getElementById("LogoText"))
           window.parent.document.getElementById("LogoText").remove();
-        // if (window.parent.document.getElementById("video"))
-        //   window.parent.document.getElementById("video").remove();
+        if (window.parent.document.getElementById("video"))
+          window.parent.document.getElementById("video").remove();
         if (!StaticProperties.isGameloaded) {
           const loader = document.getElementById("loadingGif");
           if (loader) loader.style.display = "block";
