@@ -40,8 +40,23 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #ffffff;
+      background: #180339;
       overflow: hidden;
+    }
+
+    /* Logo video instead of image */
+    #logoVideo {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      display: none;
+      transform: translateX(-50%);
+      z-index: 4;
+      width: 60vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 20vh;
+      object-fit: contain;
     }
 
     /* Default: desktop/laptop (changed to 9/16) */
@@ -51,7 +66,7 @@
       max-width: 100vw;
       border: none;
       display: block;
-      background: #000000;
+      background: rgb(232, 233, 240);
       z-index: 1;
     }
 
@@ -94,6 +109,20 @@
       height: auto;
       max-height: 10vh;
       object-fit: contain;
+    }
+
+    #prordby {
+      position: absolute;
+      left: 50%;
+      top: 80%;
+      display: block;
+      transform: translateX(-50%);
+      z-index: 4;
+      width: 20vw;
+      max-width: 90vw;
+      height: auto;
+      max-height: 10vh;
+      /* object-fit: contain; */
     }
 
     /* Animated Powered by text */
@@ -654,7 +683,7 @@
 
   <div id="gameContainer">
     <!-- Animated splash screen background -->
-    <div id="splashScreen">
+    <!-- <div id="splashScreen">
       <div class="gradient-container">
         <div class="gradient-blob blob-1"></div>
         <div class="gradient-blob blob-2"></div>
@@ -670,13 +699,17 @@
         <div class="glow-overlay"></div>
         <div class="noise-overlay"></div>
       </div>
-    </div>
+    </div> -->
 
-    <img id="logo" alt="Auction Logo" />
+    <!-- <img id="logo" alt="Auction Logo" /> -->
     <!-- <video id="video" src="myvideo.mp4" autoplay muted loop></video> -->
+    <video id="logoVideo" autoplay muted playsinline style="display:block;">
+      <source src="myvideo.mp4" type="video/mp4">
+      <!-- Your browser does not support the video tag. -->
+    </video>
 
     <!-- Animated Powered by text -->
-    <div id="PoweredByText">Powered by</div>
+    <!-- <div id="PoweredByText">Powered by</div>
     <div id="LogoText">
       <span class="x letter">X</span>
       <span class="letter">a</span>
@@ -687,12 +720,14 @@
       <span class="letter">o</span>
       <span class="letter">n</span>
       <span class="letter">X</span>
-    </div>
+    </div> -->
+
     <div id="progressBarContainer">
       <div id="progressBar"></div>
     </div>
 
     <img id="loadingGif" src="LoadingAnim.gif" alt="Loading..." />
+    <img id="prordby" src="PoweredBy.png" alt="..." />
     <iframe id="gameFrame" src="" allowfullscreen></iframe>
   </div>
   <script>
@@ -798,9 +833,11 @@
     }
 
     // Load game
-    window.addEventListener('load', () => {
+    window.addEventListener('load', async () => {
       setDynamicAspectRatio();
+      await waitforme(11000);
       gameFrame.src = 'web-mobile/index.html';
+      hideAllElements();
       console.log("WPA");
     });
 
@@ -858,8 +895,8 @@
           window.parent.document.getElementById("PoweredByText").remove();
         if (window.parent.document.getElementById("LogoText"))
           window.parent.document.getElementById("LogoText").remove();
-        // if (window.parent.document.getElementById("video"))
-        //   window.parent.document.getElementById("video").remove();
+        if (window.parent.document.getElementById("logoVideo"))
+          window.parent.document.getElementById("logoVideo").remove();
         if (!StaticProperties.isGameloaded) {
           const loader = document.getElementById("loadingGif");
           if (loader) loader.style.display = "block";
