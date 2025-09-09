@@ -256,87 +256,6 @@
       </div>
     </div>
     <script>
-
-      // Function to check if URL has token
-      function blokboltCallBackUrlCheck(url) {
-        return new Promise((resolve, reject) => {
-          try {
-            if (!url.includes("?")) {
-              return reject(new Error("Invalid URL: No token found"));
-            }
-
-            const token = url.split("?")[1];
-            resolve(token);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      }
-
-      // Function to get payment status
-      async function getPaymentStatus(token) {
-        const encodedToken = encodeURIComponent(token);
-        const url = `https://merchantapi.blockbolt.io/api/payment-init/${encodedToken}`;
-
-        try {
-          const response = await fetch(url, {
-            method: "GET",
-            redirect: "follow",
-            credentials: "include"
-          });
-
-          const text = await response.text();
-
-          if (!response.ok) {
-            console.error("getPaymentStatus error:", response.status, response.statusText, text);
-            throw new Error(`HTTP ${response.status}: ${text}`);
-          }
-
-          try {
-            return JSON.parse(text);
-          } catch {
-            return text;
-          }
-        } catch (error) {
-          console.error("Network/API error in getPaymentStatus:", error);
-          throw error;
-        }
-      }
-
-      // Example usage
-      (async () => {
-        try {
-          const url = window.location.href; // or pass your URL string
-          const tokent = await blokboltCallBackUrlCheck(url);
-
-          console.log("tokent", tokent);
-
-          if (tokent) {
-            alert("You are redirected from blokbolt with token: " + tokent);
-
-            getPaymentStatus(tokent.toString())
-              .then((res) => {
-                console.log("Payment status:", res);
-                if (res.status === "success" && res.auction_id && res.player_id) {
-                  const auctionId = res.auction_id;
-                  const playerId = res.player_id;
-                  alert("You are logged in with token: " + tokent + ", auctionId: " + auctionId + ", playerId: " + playerId);
-                } else {
-                  alert("Payment failed or invalid response.");
-                }
-              })
-              .catch((err) => {
-                console.error("Error fetching payment status:", err);
-                alert("Error fetching payment status.");
-              });
-          }
-        } catch (error) {
-          console.log("No valid token found in URL");
-        }
-      })();
-
-
-
       window.addEventListener("callRedirect", function () {
         redirectToSavedUrl();
       });
@@ -362,9 +281,28 @@
         StaticProperties.hostname = parsedUrl.host;
         StaticProperties.hostname = "dinesh.auctionx.dev"; // For testing
       })();
-      function animateProgressBar(toPercent, duration = 400) {
-        progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
-        progressBar.style.width = `${toPercent}%`;
+      // function animateProgressBar(toPercent, duration = 400) {
+      //   progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
+      //   progressBar.style.width = `${toPercent}%`;
+      // }
+
+      function animateProgressBar(toPercent, duration = 5000) {
+        let start = null;
+        let fromPercent = 0; // start from 0 always
+        let diff = toPercent - fromPercent;
+
+        function step(timestamp) {
+          if (!start) start = timestamp;
+          let progress = timestamp - start;
+          let percent = Math.min(fromPercent + (progress / duration) * diff, toPercent);
+          progressBar.style.width = percent + "%";
+
+          if (progress < duration) {
+            requestAnimationFrame(step);
+          }
+        }
+
+        requestAnimationFrame(step);
       }
 
       function showProgressBar() {
@@ -382,7 +320,7 @@
         const progressBar = document.getElementById("progressBar");
         try {
           showProgressBar();
-          animateProgressBar(85, 1300);
+          animateProgressBar(85, 8000);
         } catch (error) {
           // hideProgressBar();
           console.error("Error loading logo:", error);
@@ -439,7 +377,7 @@
           await waitforme(500);
           // progressBarContainer.style.display = "none";
           // progressBar.style.width = "0%";
-          animateProgressBar(100, 500);
+          animateProgressBar(100, 10);
           setTimeout(() => {
             hideProgressBar();
           }, 500);
@@ -481,10 +419,10 @@
             window.parent.document.getElementById("LogoText").remove();
           if (window.parent.document.getElementById("video"))
             window.parent.document.getElementById("video").remove();
-          if (!StaticProperties.isGameloaded) {
-            const loader = document.getElementById("loadingGif");
-            if (loader) loader.style.display = "block";
-          }
+          // if (!StaticProperties.isGameloaded) {
+          //   const loader = document.getElementById("loadingGif");
+          //   if (loader) loader.style.display = "block";
+          // }
         }, 200);
       }
     </script>
