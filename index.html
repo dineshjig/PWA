@@ -63,7 +63,7 @@
       max-width: 100vw;
       border: none;
       display: block;
-      background: #000000;
+      background: #00000000;
       z-index: 1;
     }
 
@@ -399,6 +399,8 @@
 
       // Hide splash screen
       function hideAllElements() {
+        alert("Removing splash screen elements");
+        console.warn("Removing splash screen elements");
         // if (!StaticProperties.isProgress) return
         if (window.parent.document.getElementById("gameFrame"))
           window.parent.document.getElementById("gameFrame").style.opacity = "1";
@@ -409,8 +411,8 @@
             window.parent.document.getElementById("splashScreen").remove();
           // if (window.parent.document.getElementById("logo"))
           //   window.parent.document.getElementById("logo").remove();
-          if (window.parent.document.getElementById("gameFrame2"))
-            window.parent.document.getElementById("gameFrame2").remove();
+          // if (window.parent.document.getElementById("gameFrame2"))
+          //   window.parent.document.getElementById("gameFrame2").remove();
           if (window.parent.document.getElementById("earth"))
             window.parent.document.getElementById("earth").remove();
           if (window.parent.document.getElementById("PoweredByText"))
