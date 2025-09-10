@@ -375,6 +375,7 @@
       window.addEventListener("hideLoader", async () => {
         if (!StaticProperties.isProgress) {
           await waitforme(500);
+          StaticProperties.isProgress = true;
           // progressBarContainer.style.display = "none";
           // progressBar.style.width = "0%";
           animateProgressBar(100, 10);
