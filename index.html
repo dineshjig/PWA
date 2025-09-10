@@ -380,8 +380,9 @@
           animateProgressBar(100, 10);
           setTimeout(() => {
             hideProgressBar();
+            hideAllElements();
           }, 500);
-          setTimeout(hideAllElements, 550);
+          // setTimeout(hideAllElements, 550);
           StaticProperties.isGameloaded = true;
         }
         const loader = document.getElementById("loadingGif");
