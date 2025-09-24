@@ -265,6 +265,12 @@
         redirectToSavedUrl();
       });
 
+      if (window !== window.parent) {
+        console.log('We are inside an iframe', window.parent);
+        alert("fffffff");
+      } else {
+        console.log('We are not in an iframe');
+      }
       window.addEventListener("offline", function () { alert("Please check your network connection."); });
 
       function redirectToSavedUrl() {
