@@ -269,7 +269,8 @@
         console.log('We are inside an iframe', window.parent);
         alert("fffffff");
       } else {
-        console.log('We are not in an iframe');
+        console.log('We are not in an iframe', window.parent);
+        alert("fffffff");
       }
       window.addEventListener("offline", function () { alert("Please check your network connection."); });
 
