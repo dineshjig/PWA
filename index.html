@@ -267,6 +267,7 @@
       if (window !== window.parent) {
         console.warn('We are inside an iframe', window.parent);
         const parentIframe = window.frameElement;
+        console.warn("parentIframe", parentIframe)
         if (parentIframe) {
           const parsedUrl = new URL(window.location.href);
           if (parsedUrl) {
