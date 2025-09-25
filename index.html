@@ -265,28 +265,37 @@
         redirectToSavedUrl();
       });
       if (window !== window.parent) {
-        console.warn('We are inside an iframe', window.parent);
-        const parentIframe = window.frameElement;
-        console.warn("parentIframe", parentIframe)
-        if (parentIframe) {
-          const parsedUrl = new URL(window.location.href);
-          if (parsedUrl) {
-            console.warn("parsedUrl", parsedUrl)
-            const customEvent = new CustomEvent("testurl", {
-              detail: parsedUrl
-            });
+        console.warn('We are inside an iframe');
 
-            // Dispatch it on window
-            window.parent.dispatchEvent(customEvent);
-          }
-          parentIframe.remove(); // ⚠️ Remove the iframe from the parent document
+        const parsedUrl = new URL(window.location.href);
+        if (parsedUrl) {
+          console.warn("parsedUrl", parsedUrl.href);
+
+          // Send message to parent safely
+          window.parent.postMessage(
+            { type: "testurl", url: parsedUrl.href },
+            "*"
+          );
         }
+
+        // Optional: don’t auto-remove; let parent decide
+        // window.frameElement?.remove();
+
       } else {
-        console.warn('We are not in an iframe', window.parent);
-        window.addEventListener("testurl", (event) => {
-          console.warn("testurl", event)
+        console.warn('We are not in an iframe');
+
+        // Listen for iframe messages
+        window.addEventListener("message", (event) => {
+          if (event.data?.type === "testurl") {
+            console.warn("Received testurl from iframe:", event.data.url);
+
+            // ✅ Now safe to remove iframe if needed
+            const iframe = document.querySelector("iframe");
+            if (iframe) iframe.remove();
+          }
         });
       }
+
       window.addEventListener("offline", function () { alert("Please check your network connection."); });
 
       function redirectToSavedUrl() {
