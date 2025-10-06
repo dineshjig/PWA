@@ -264,8 +264,8 @@
       window.addEventListener("callRedirect", function () {
         redirectToSavedUrl();
       });
-      if (window !== window.parent) {
-        console.warn('We are inside an iframe', window.parent);
+      if (window !== window) {
+        console.warn('We are inside an iframe', window);
         const parentIframe = window.frameElement;
 
         if (parentIframe) {
@@ -286,15 +286,15 @@
               detail: parsedUrl
             });
             // Dispatch it on window
-            window.parent.dispatchEvent(customEvent);
+            window.dispatchEvent(customEvent);
           }
 
           parentIframe.remove(); // ⚠️ Remove the iframe from the parent document
-          if (window.parent.document.getElementById("frame-BlockBot"))
-            window.parent.document.getElementById("frame-BlockBot").remove();
+          if (window.document.getElementById("frame-BlockBot"))
+            window.document.getElementById("frame-BlockBot").remove();
         }
       } else {
-        console.warn('We are not in an iframe', window.parent);
+        console.warn('We are not in an iframe', window);
         window.addEventListener("testurl", (event) => {
           console.warn("testurl", event)
         });
@@ -443,25 +443,25 @@
       // Hide splash screen
       function hideAllElements() {
         // if (!StaticProperties.isProgress) return
-        if (window.parent.document.getElementById("gameFrame"))
-          window.parent.document.getElementById("gameFrame").style.opacity = "1";
+        if (window.document.getElementById("gameFrame"))
+          window.document.getElementById("gameFrame").style.opacity = "1";
 
         // Remove the splash screen after it's faded out
         setTimeout(function () {
-          if (window.parent.document.getElementById("splashScreen"))
-            window.parent.document.getElementById("splashScreen").style.display = "none";
-          // if (window.parent.document.getElementById("logo"))
-          //   window.parent.document.getElementById("logo").style.display="none";
-          if (window.parent.document.getElementById("gameFrame2"))
-            window.parent.document.getElementById("gameFrame2").style.display = "none";
-          // if (window.parent.document.getElementById("earth"))
-          //   window.parent.document.getElementById("earth").style.display = "none";
-          if (window.parent.document.getElementById("PoweredByText"))
-            window.parent.document.getElementById("PoweredByText").style.display = "none";
-          // if (window.parent.document.getElementById("LogoText"))
-          //   window.parent.document.getElementById("LogoText").style.display = "none";
-          if (window.parent.document.getElementById("video"))
-            window.parent.document.getElementById("video").style.display = "none";
+          if (window.document.getElementById("splashScreen"))
+            window.document.getElementById("splashScreen").style.display = "none";
+          // if (window.document.getElementById("logo"))
+          //   window.document.getElementById("logo").style.display="none";
+          if (window.document.getElementById("gameFrame2"))
+            window.document.getElementById("gameFrame2").style.display = "none";
+          // if (window.document.getElementById("earth"))
+          //   window.document.getElementById("earth").style.display = "none";
+          if (window.document.getElementById("PoweredByText"))
+            window.document.getElementById("PoweredByText").style.display = "none";
+          // if (window.document.getElementById("LogoText"))
+          //   window.document.getElementById("LogoText").style.display = "none";
+          if (window.document.getElementById("video"))
+            window.document.getElementById("video").style.display = "none";
           // if (!StaticProperties.isGameloaded) {
           //   const loader = document.getElementById("loadingGif");
           //   if (loader) loader.style.display = "block";
