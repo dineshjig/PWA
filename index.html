@@ -434,17 +434,20 @@
             .catch((err) => console.error("Service Worker Error:", err));
         });
       }
-      if (window.parent) {
-        window.parent.postMessage(
-          { type: "HIDE_ELEMENTS", ids: ["splashScreen", "gameFrame2", "PoweredByText", "video"] },
-          "*"
-        );
-      } else if (window) {
-        window.postMessage(
-          { type: "HIDE_ELEMENTS", ids: ["splashScreen", "gameFrame2", "PoweredByText", "video"] },
-          "*"
-        );
-      }
+         window.addEventListener("message", (event) => {
+            // security check
+         //   if (event.origin !== "https://pwa-mu-nine.vercel.app") return;
+
+            if (event.data.type === "HIDE_ELEMENTS") {
+              event.data.ids.forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                  el.style.display = "none";
+                  console.log(`Hidden: ${id}`);
+                }
+              });
+            }
+          });
 
       // Hide splash screen
       function hideAllElements() {
