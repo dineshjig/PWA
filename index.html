@@ -199,7 +199,7 @@
       z-index: 5;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       overflow: hidden;
-      display: none;
+      display: block;
     }
 
     #progressBar {
@@ -265,37 +265,40 @@
         redirectToSavedUrl();
       });
       if (window !== window.parent) {
-        console.warn('We are inside an iframe');
+        console.warn('We are inside an iframe', window.parent);
+        const parentIframe = window.frameElement;
 
-        const parsedUrl = new URL(window.location.href);
-        if (parsedUrl) {
-          console.warn("parsedUrl", parsedUrl.href);
+        if (parentIframe) {
 
-          // Send message to parent safely
-          window.parent.postMessage(
-            { type: "testurl", url: parsedUrl.href },
-            "*"
-          );
-        }
+          const parsedUrl = new URL(window.location.href);
+          if (parsedUrl) {
 
-        // Optional: don’t auto-remove; let parent decide
-        // window.frameElement?.remove();
+            const urlObj = new URL(parsedUrl);
+            const success = urlObj.searchParams.get("success");
+            if (success === "true") {
+              console.warn("✅ Payment Successful!");
+            } else if (success === "false") {
+              console.warn("❌ Payment Cancelled!");
+            }
 
-      } else {
-        console.warn('We are not in an iframe');
-
-        // Listen for iframe messages
-        window.addEventListener("message", (event) => {
-          if (event.data?.type === "testurl") {
-            console.warn("Received testurl from iframe:", event.data.url);
-
-            // ✅ Now safe to remove iframe if needed
-            const iframe = document.querySelector("iframe");
-            if (iframe) iframe.remove();
+            console.warn("parsedUrl", parsedUrl)
+            const customEvent = new CustomEvent("testurl", {
+              detail: parsedUrl
+            });
+            // Dispatch it on window
+            window.parent.dispatchEvent(customEvent);
           }
+
+          parentIframe.remove(); // ⚠️ Remove the iframe from the parent document
+          if (window.parent.document.getElementById("frame-BlockBot"))
+            window.parent.document.getElementById("frame-BlockBot").remove();
+        }
+      } else {
+        console.warn('We are not in an iframe', window.parent);
+        window.addEventListener("testurl", (event) => {
+          console.warn("testurl", event)
         });
       }
-
       window.addEventListener("offline", function () { alert("Please check your network connection."); });
 
       function redirectToSavedUrl() {
@@ -307,6 +310,11 @@
 
       const StaticProperties = {
         hostname: "",
+<<<<<<< HEAD
+        // apiBaseURL: 'https://api-demo.auctionx.live/', // change for prod
+        apiBaseURL: "https://api.auctionx.dev/",
+=======
+>>>>>>> multiple-auction
         isProgress: false,
         isGameloaded: false
       };
@@ -321,9 +329,9 @@
       //   progressBar.style.width = `${toPercent}%`;
       // }
 
-      function animateProgressBar(toPercent, duration = 5000) {
+      function animateProgressBar(toPercent, duration = 5000, fromPercent1 = 0) {
         let start = null;
-        let fromPercent = 0; // start from 0 always
+        let fromPercent = fromPercent1; // start from 0 always
         let diff = toPercent - fromPercent;
 
         function step(timestamp) {
@@ -342,7 +350,7 @@
 
       function showProgressBar() {
         progressBarContainer.style.display = "block";
-        animateProgressBar(10, 300);
+        animateProgressBar(20, 2000);
       }
 
       function hideProgressBar() {
@@ -355,7 +363,7 @@
         const progressBar = document.getElementById("progressBar");
         try {
           showProgressBar();
-          animateProgressBar(85, 8000);
+          //animateProgressBar(99, 8000);
         } catch (error) {
           // hideProgressBar();
           console.error("Error loading logo:", error);
@@ -411,12 +419,11 @@
         if (!StaticProperties.isProgress) {
           const loader = document.getElementById("loader");
           if (loader) loader.style.display = "none";
-          await waitforme(500);
-          animateProgressBar(100, 10);
+          animateProgressBar(100, 6000, 20);
           setTimeout(() => {
             hideProgressBar();
-          }, 500);
-          setTimeout(hideAllElements, 550);
+          }, 12000);
+          setTimeout(hideAllElements, 7000);
           StaticProperties.isGameloaded = true;
         }
 
