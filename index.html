@@ -409,8 +409,12 @@
         const loader = document.getElementById("loader");
         if (loader) loader.style.display = "block";
       });
+      const customEvent = new CustomEvent("hideLoader", {
+        detail: ""
+      });
+      // Dispatch it on window
 
-      window.parent.dispatchEvent("hideLoader");
+
       window.addEventListener("hideLoader", async () => {
         if (!StaticProperties.isProgress) {
           const loader = document.getElementById("loader");
@@ -425,6 +429,8 @@
 
       });
       // PWA Service Worker
+
+      window.parent.dispatchEvent(customEvent);
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
