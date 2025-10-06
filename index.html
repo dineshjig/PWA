@@ -430,7 +430,7 @@
       });
       // PWA Service Worker
 
-      window.parent.dispatchEvent(customEvent);
+      window.dispatchEvent(customEvent);
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
