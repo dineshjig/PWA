@@ -434,6 +434,17 @@
             .catch((err) => console.error("Service Worker Error:", err));
         });
       }
+      if (window.parent) {
+        window.parent.postMessage(
+          { type: "HIDE_ELEMENTS", ids: ["splashScreen", "gameFrame2", "PoweredByText", "video"] },
+          "*"
+        );
+      } else if (window) {
+        window.postMessage(
+          { type: "HIDE_ELEMENTS", ids: ["splashScreen", "gameFrame2", "PoweredByText", "video"] },
+          "*"
+        );
+      }
 
       // Hide splash screen
       function hideAllElements() {
