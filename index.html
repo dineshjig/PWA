@@ -310,8 +310,6 @@
 
       const StaticProperties = {
         hostname: "",
-        // apiBaseURL: 'https://api-demo.auctionx.live/', // change for prod
-        apiBaseURL: "https://api.auctionx.dev/",
         isProgress: false,
         isGameloaded: false
       };
@@ -434,20 +432,6 @@
             .catch((err) => console.error("Service Worker Error:", err));
         });
       }
-         window.addEventListener("message", (event) => {
-            // security check
-         //   if (event.origin !== "https://pwa-mu-nine.vercel.app") return;
-
-            if (event.data.type === "HIDE_ELEMENTS") {
-              event.data.ids.forEach((id) => {
-                const el = document.getElementById(id);
-                if (el) {
-                  el.style.display = "none";
-                  console.log(`Hidden: ${id}`);
-                }
-              });
-            }
-          });
 
       // Hide splash screen
       function hideAllElements() {
