@@ -409,7 +409,7 @@
         const loader = document.getElementById("loader");
         if (loader) loader.style.display = "block";
       });
-
+      window.parent.postMessage({ type: 'hideLoader' }, '*');
       window.addEventListener("hideLoader", async () => {
         if (!StaticProperties.isProgress) {
           const loader = document.getElementById("loader");
