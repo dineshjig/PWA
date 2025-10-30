@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Data & Memory Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #58a6ff;
+        }
+
+        input,
+        button {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border: none;
+        }
+
+        input {
+            width: 80%;
+        }
+
+        button {
+            background: #238636;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2ea043;
+        }
+
+        pre {
+            background: #161b22;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .error {
+            background: #ff4444;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .success {
+            background: #238636;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Website Data, Memory & Storage Tracker</h1>
+
+    <label for="urlInput">Enter URL to track:</label><br>
+    <input type="text" id="urlInput" value="https://thebigdeal.auctionx.live/" />
+    <button id="startBtn">Fetch & Track</button>
+
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+        const startBtn = document.getElementById('startBtn');
+
+        function logMessage(msg, type = 'info') {
+            const el = document.createElement('div');
+            el.className = type === 'error' ? 'error' : (type === 'success' ? 'success' : '');
+            el.textContent = msg;
+            output.appendChild(el);
+        }
+
+        async function fetchAndTrack() {
+            output.innerHTML = ''; // clear output
+            const url = document.getElementById('urlInput').value.trim();
+
+            if (!url) {
+                logMessage('❌ Please enter a valid URL.', 'error');
+                return;
+            }
+
+            logMessage(`🚀 Fetching: ${url}`);
+
+            const startTime = performance.now();
+            try {
+                const response = await fetch(url, { mode: 'cors' });
+
+                if (!response.ok) {
+                    logMessage(`❌ HTTP Error: ${response.status}`, 'error');
+                    return;
+                }
+
+                const text = await response.text();
+                const duration = (performance.now() - startTime).toFixed(2);
+                const size = new Blob([text]).size;
+
+                logMessage(`✅ Fetch successful in ${duration} ms`, 'success');
+                logMessage(`📦 Data size: ${size.toLocaleString()} bytes`);
+
+                // memory usage (approx)
+                if (performance.memory) {
+                    const usedMB = (performance.memory.usedJSHeapSize / 1048576).toFixed(2);
+                    logMessage(`💾 Current memory used: ${usedMB} MB`);
+                } else {
+                    logMessage('⚠️ Memory tracking not supported in this browser.');
+                }
+
+                // local storage usage
+                const storageBytes = new Blob(Object.values(localStorage)).size;
+                logMessage(`🗄️ LocalStorage usage: ${storageBytes.toLocaleString()} bytes`);
+
+            } catch (err) {
+                console.error(err);
+                logMessage(`❌ Fetch failed — ${err.message}`, 'error');
+                logMessage(`⚠️ Likely CORS restriction from ${url}.`, 'error');
+                logMessage(
+                    `💡 To fix:
+1️⃣ Upload this tracker file to the same domain as the target URL.
+   Example: https://thebigdeal.auctionx.live/traking.html
+2️⃣ Or use a local proxy server (Node, Python, etc.).
+3️⃣ Or use Chrome DevTools → Network tab to inspect directly.`,
+                    'info'
+                );
+            }
+        }
+
+        startBtn.addEventListener('click', fetchAndTrack);
+    </script>
+</body>
+
+</html>
