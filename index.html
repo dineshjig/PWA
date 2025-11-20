@@ -1,467 +1,69 @@
 <!DOCTYPE html>
-<html lang="en" style="background: #000000">
-
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>AuctionX</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="manifest" href="manifest.json" />
-  <style>
-    /* Responsive: logo/powered by for phones */
-    @media (max-width: 500px) {
-      #logo {
-        width: 60vw !important;
-        max-width: 90vw !important;
-        left: 50%;
-        transform: translateX(-50%);
-        height: auto;
-        max-height: 15vh;
-      }
+  <meta charset="utf-8">
 
-    }
+  <title>Cocos Creator | BIG_DEAL</title>
 
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      background: #000000;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      touch-action: none;
-    }
+  <!--http://www.html5rocks.com/en/mobile/mobifying/-->
+  <meta name="viewport"
+        content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1,minimal-ui=true"/>
 
-    #gameContainer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100svh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #160223;
-      overflow: hidden;
-    }
+  <!--https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
 
-    /* Default: desktop/laptop (changed to 9/16) */
-    #gameFrame {
-      position: absolute;
-      aspect-ratio: 9 / 16;
-      height: 100%;
-      max-width: 100vw;
-      border: none;
-      display: block;
-      background: #000000;
-      z-index: 0;
-    }
+  <!-- force webkit on 360 -->
+  <meta name="renderer" content="webkit"/>
+  <meta name="force-rendering" content="webkit"/>
+  <!-- force edge on IE -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <meta name="msapplication-tap-highlight" content="no">
 
-    #gameFrame2,
-    #loader {
-      position: absolute;
-      aspect-ratio: 9 / 16;
-      height: 100%;
-      max-width: 100vw;
-      border: none;
-      /* display: block; */
-      background: #000000;
-      z-index: 1;
-    }
+  <!-- force full screen on some browser -->
+  <meta name="full-screen" content="yes"/>
+  <meta name="x5-fullscreen" content="true"/>
+  <meta name="360-fullscreen" content="true"/>
 
-    /* Mobile override */
-    @media (max-width: 768px) {
-      #gameFrame {
-        aspect-ratio: 9 / 16 !important;
-        height: 100%;
-        max-width: 100vw;
-      }
+  <!--fix fireball/issues/3568 -->
+  <!--<meta name="browsermode" content="application">-->
+  <meta name="x5-page-mode" content="app">
 
-      #gameFrame2,
-      #loader {
-        aspect-ratio: 9 / 16 !important;
-        height: 100%;
-        max-width: 100vw;
-      }
+  <!--<link rel="apple-touch-icon" href=".png" />-->
+  <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
 
-      #gameContainer {
-        background: #130c20 !important;
-      }
-    }
+  <link rel="stylesheet" type="text/css" href="style.css"/>
 
-    #video {
-      position: absolute;
-      left: 50%;
-      top: 20%;
-      /* display: block; */
-      transform: translateX(-50%);
-      z-index: 4;
-      width: 100%;
-      max-width: 90vw;
-      height: auto;
-      max-height: 30vh;
-      object-fit: contain;
-      pointer-events: none;
-      background: transparent;
-      background: lch(0% 0 0 0);
-    }
-
-    /* Splash Screen Background (animated) */
-    #splashScreen {
-      position: absolute;
-      aspect-ratio: 9 / 16;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      height: 100svh;
-      max-width: 100vw;
-      max-height: 100svh;
-      /* display: block; */
-      overflow: hidden;
-    }
-
-    /* #earth {
-      position: absolute;
-      left: 50%;
-      bottom: 0%;
-
-      transform: translate(-50%, 100%);
-      z-index: 4;
-      width: 110%;
-
-      height: auto;
-
-      object-fit: contain;
-      animation: fadeDown 0.33s forwards;
-    }
-
-    @keyframes fadeDown {
-      to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-      }
-    } */
-
-    /* 
-    #logo {
-      position: absolute;
-      left: 50%;
-      top: 40%;
-      display: none;
-      transform: translateX(-50%);
-      z-index: 4;
-      width: 60vw;
-      max-width: 90vw;
-      height: auto;
-      max-height: 20vh;
-      object-fit: contain;
-    } */
-
-    /* Animated Powered by text */
-    #PoweredByText {
-      position: absolute;
-      left: 50%;
-      bottom: 7%;
-      transform: translateX(-50%, -30px);
-      z-index: 4;
-      width: 50%;
-      max-width: 70vw;
-      height: auto;
-      max-height: 25vh;
-      object-fit: contain;
-      animation: fadeSlide 0.33s forwards;
-    }
-
-
-
-    @keyframes fadeSlide {
-      to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-      }
-    }
-
-
-
-    /* Animated Logo letters */
-
-
-    /* Progress bar */
-    #progressBarContainer {
-      position: absolute;
-      left: 50%;
-      bottom: 20%;
-      transform: translate(-50%, 0);
-      width: 70%;
-      max-width: 90vw;
-      height: 4px;
-      background: #e0e0e0;
-      border-radius: 3px;
-      z-index: 5;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      display: block;
-    }
-
-    #progressBar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
-      border-radius: 3px;
-      transition: width 0.9s cubic-bezier(.4, 0, .2, 1);
-      box-shadow: 0 1px 4px rgba(123, 47, 242, 0.15);
-    }
-
-    /* Loader GIF */
-    #loadingGif {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-      display: block;
-      /* hidden by default */
-      width: 20vw;
-      /* adjust size */
-      height: auto;
-    }
-
-    /* Animated Gradient Background */
-    .gradient-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffffff 50%);
-    }
-  </style>
 </head>
-
 <body>
-  <div id="rotate-warning" style="display: none">
-    Please rotate your device to portrait mode
-  </div>
-
-  <div id="gameContainer">
-
-    <iframe id="gameFrame" src="" allowfullscreen></iframe>
-    <div id="gameFrame2">
-      <div id="splashScreen">
-        <div class="gradient-container">
-        </div>
-      </div>
-
-      <video id="video" src="Big Deal Without BG.mp4" autoplay muted></video>
-      <img id="PoweredByText" src="PoweredBy.png" />
-      <!-- <img id="earth" src="earth.png" /> -->
-      <!-- <img id="loadingGif" src="LoadingAnim.gif" alt="Loading..." /> -->
-      <div id="progressBarContainer">
-        <div id="progressBar"></div>
+  <div id="GameDiv" cc_exact_fit_screen="true">
+      <div id="Cocos3dGameContainer">
+        <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="99"></canvas>
       </div>
     </div>
-    <div id="loader" style="display: none; background: rgba(0, 0, 0, 0);">
-      <img id="loadingGif" src="LoadingAnim.gif" alt="Loading..." />
-    </div>
-    <script>
-      window.addEventListener("callRedirect", function () {
-        redirectToSavedUrl();
-      });
-      if (window !== window) {
-        console.warn('We are inside an iframe', window);
-        const parentIframe = window.frameElement;
-
-        if (parentIframe) {
-
-          const parsedUrl = new URL(window.location.href);
-          if (parsedUrl) {
-
-            const urlObj = new URL(parsedUrl);
-            const success = urlObj.searchParams.get("success");
-            if (success === "true") {
-              console.warn("✅ Payment Successful!");
-            } else if (success === "false") {
-              console.warn("❌ Payment Cancelled!");
-            }
-
-            console.warn("parsedUrl", parsedUrl)
-            const customEvent = new CustomEvent("testurl", {
-              detail: parsedUrl
-            });
-            // Dispatch it on window
-            window.dispatchEvent(customEvent);
-          }
-
-          parentIframe.remove(); // ⚠️ Remove the iframe from the parent document
-          if (window.document.getElementById("frame-BlockBot"))
-            window.document.getElementById("frame-BlockBot").remove();
-        }
-      } else {
-        console.warn('We are not in an iframe', window);
-        window.addEventListener("testurl", (event) => {
-          console.warn("testurl", event)
-        });
-      }
-      window.addEventListener("offline", function () { alert("Please check your network connection."); });
-
-      function redirectToSavedUrl() {
-        const baseUrl = localStorage.getItem("savedBaseUrlParams");
-        if (baseUrl) {
-          window.location.href = baseUrl;
-        }
-      }
-
-      const StaticProperties = {
-        hostname: "",
-        isProgress: false,
-        isGameloaded: false
-      };
-
-      (function detectHostname() {
-        const parsedUrl = new URL(window.location.href);
-        StaticProperties.hostname = parsedUrl.host;
-        // StaticProperties.hostname = "dinesh.auctionx.dev"; // For testing
-      })();
-      // function animateProgressBar(toPercent, duration = 400) {
-      //   progressBar.style.transition = `width ${duration}ms cubic-bezier(.4,0,.2,1)`;
-      //   progressBar.style.width = `${toPercent}%`;
-      // }
-
-      function animateProgressBar(toPercent, duration = 5000, fromPercent1 = 0) {
-        let start = null;
-        let fromPercent = fromPercent1; // start from 0 always
-        let diff = toPercent - fromPercent;
-
-        function step(timestamp) {
-          if (!start) start = timestamp;
-          let progress = timestamp - start;
-          let percent = Math.min(fromPercent + (progress / duration) * diff, toPercent);
-          progressBar.style.width = percent + "%";
-
-          if (progress < duration) {
-            requestAnimationFrame(step);
-          }
-        }
-
-        requestAnimationFrame(step);
-      }
-
-      function showProgressBar() {
-        progressBarContainer.style.display = "block";
-        animateProgressBar(20, 2000);
-      }
-
-      function hideProgressBar() {
-        progressBarContainer.style.display = "none";
-        progressBar.style.width = "0%";
-      }
-      // Load logo dynamically
-      (async function fetchAndSetLogo() {
-        const progressBarContainer = document.getElementById("progressBarContainer");
-        const progressBar = document.getElementById("progressBar");
-        try {
-          showProgressBar();
-          //animateProgressBar(99, 8000);
-        } catch (error) {
-          // hideProgressBar();
-          console.error("Error loading logo:", error);
-        }
-      })();
-      function waitforme(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
+  
+<script src="./vconsole.min.js"></script>
+<script type="text/javascript">
+    // open web debugger console
+    window.VConsole && (window.vConsole = new VConsole());
+</script>
 
 
-      // Orientation warning
-      function checkOrientation() {
-        const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-        document.getElementById("rotate-warning").style.display = isPortrait
-          ? "none"
-          : "block";
-      }
-      window.addEventListener("orientationchange", checkOrientation);
-      window.addEventListener("resize", checkOrientation);
-      checkOrientation();
+<!-- Polyfills bundle. -->
 
-      const gameFrame = document.getElementById("gameFrame");
+<script src="src/polyfills.bundle.js" charset="utf-8"> </script>
 
-      function isMobile() {
-        return /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent);
-      }
 
-      function setDynamicAspectRatio() {
-        if (isMobile()) {
-          gameFrame.style.aspectRatio = "9 / 16";
-        } else {
-          gameFrame.style.aspectRatio = "9 / 16";
-        }
-      }
+<!-- SystemJS support. -->
+<script src="src/system.bundle.js" charset="utf-8"> </script>
 
-      // Load game
-      window.addEventListener('load', () => {
-        setDynamicAspectRatio();
-        gameFrame.src = 'web-mobile/index.html';
-        console.log("WPA");
-      });
+<!-- Import map -->
+<script src="src/import-map.json" type="systemjs-importmap" charset="utf-8"> </script>
 
-      window.addEventListener("resize", setDynamicAspectRatio);
-      window.addEventListener("orientationchange", setDynamicAspectRatio);
-      // Loader controls
-      window.addEventListener("showLoader", () => {
-        if (!StaticProperties.isGameloaded) return;
-        const loader = document.getElementById("loader");
-        if (loader) loader.style.display = "block";
-      });
+<script>
+    System.import('./index.js').catch(function(err) { console.error(err); })
+</script>
 
-      window.addEventListener("hideLoader", async () => {
-        if (!StaticProperties.isProgress) {
-          const loader = document.getElementById("loader");
-          if (loader) loader.style.display = "none";
-          animateProgressBar(100, 6000, 20);
-          setTimeout(() => {
-            hideProgressBar();
-          }, 12000);
-          setTimeout(hideAllElements, 7000);
-          StaticProperties.isGameloaded = true;
-        }
-
-      });
-      // PWA Service Worker
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("service-worker.js")
-            .then(() => console.log("Service Worker Registered"))
-            .catch((err) => console.error("Service Worker Error:", err));
-        });
-      }
-
-      // Hide splash screen
-      function hideAllElements() {
-        // if (!StaticProperties.isProgress) return
-        if (window.document.getElementById("gameFrame"))
-          window.document.getElementById("gameFrame").style.opacity = "1";
-
-        // Remove the splash screen after it's faded out
-        setTimeout(function () {  
-          if (window.document.getElementById("splashScreen"))
-            window.document.getElementById("splashScreen").style.display = "none";
-          // if (window.document.getElementById("logo"))
-          //   window.document.getElementById("logo").style.display="none";
-          if (window.document.getElementById("gameFrame2"))
-            window.document.getElementById("gameFrame2").style.display = "none";
-          // if (window.document.getElementById("earth"))
-          //   window.document.getElementById("earth").style.display = "none";
-          if (window.document.getElementById("PoweredByText"))
-            window.document.getElementById("PoweredByText").style.display = "none";
-          // if (window.document.getElementById("LogoText"))
-          //   window.document.getElementById("LogoText").style.display = "none";
-          if (window.document.getElementById("video"))
-            window.document.getElementById("video").style.display = "none";
-          // if (!StaticProperties.isGameloaded) {
-          //   const loader = document.getElementById("loadingGif");
-          //   if (loader) loader.style.display = "block";
-          // }
-        }, 200);
-      }
-    </script>
 </body>
-
 </html>
