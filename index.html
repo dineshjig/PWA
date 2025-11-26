@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>AuctionX</title>
-
+  <script src="https://unpkg.com/@web3modal/wagmi@latest/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/viem@latest/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/wagmi@latest/dist/index.umd.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="manifest" href="manifest.json" />
   <style>
@@ -849,6 +851,20 @@
     if (typeof window.ethereum === 'undefined') {
       console.log('MetaMask not detected');
     }
+    if (window !== window.parent) {
+      console.warn('We are inside an iframe', window.parent); const parentIframe = window.frameElement; if (parentIframe) {
+        const parsedUrl = new URL(window.location.href); if (parsedUrl) {
+          const urlObj = new URL(parsedUrl);
+          const success = urlObj.searchParams.get("success");
+          if (success === "true") {
+            console.warn("✅ Payment Successful!");
+          }
+          else if (success === "false") { console.warn("❌ Payment Cancelled!"); }
+          console.warn("parsedUrl", parsedUrl)
+          const customEvent = new CustomEvent("testurl", { detail: parsedUrl }); // Dispatch it on window window.parent.dispatchEvent(customEvent); } parentIframe.remove(); // ⚠️ Remove the iframe from the parent document if (window.parent.document.getElementById("frame-BlockBot")) { window.parent.document.getElementById("frame-BlockBot").remove(); window.document.getElementById("gameContainer").remove(); } else { } } } else { console.warn('We are not in an iframe', window.parent); window.addEventListener("testurl", (event) => { console.warn("testurl", event) }); }
+        }
+      }
+    }
   </script>
   <script>
 
@@ -997,8 +1013,6 @@
         await loadImages();       // 3️⃣ Load logo dynamically
         setDynamicAspectRatio();  // 4️⃣ Set aspect ratio
         gameFrame.src = "web-mobile/index.html";
-        if (loader) loader.style.display = "none";
-        hideAllElements();
         console.log("🎮 Game loading...");
       } catch (err) {
         console.error("Initialization failed:", err);
