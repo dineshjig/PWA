@@ -894,7 +894,14 @@
           const searchParams = parsedUrl.searchParams;
           const url_token = searchParams.get("token");
 
+          const x_auth = searchParams.get("x_auth");
+
           const host = window.location.host;
+          if (x_auth === "success") {
+            window.open("https://x.com/intent/follow?screen_name=auctionx_live", "_blank");
+          } else {
+            console.log("No x_auth parameter found in URL");
+          }
 
           if (host.includes("auctionx.dev")) {
             StaticProperties.apiBaseURL = "https://api.auctionx.dev/";
