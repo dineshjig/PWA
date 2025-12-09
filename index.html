@@ -856,14 +856,10 @@
         const parsedUrl = new URL(window.location.href); if (parsedUrl) {
           const urlObj = new URL(parsedUrl);
           const success = urlObj.searchParams.get("success");
-          const x_auth = urlObj.searchParams.get("x_auth");
           if (success === "true") {
             console.warn("✅ Payment Successful!");
           }
           else if (success === "false") { console.warn("❌ Payment Cancelled!"); }
-          if (x_auth === "success") {
-            window.open("https://x.com/intent/follow?screen_name=auctionx_live", "_blank");
-          }
           console.warn("parsedUrl", parsedUrl)
           const customEvent = new CustomEvent("testurl", { detail: parsedUrl }); // Dispatch it on window window.parent.dispatchEvent(customEvent); } parentIframe.remove(); // ⚠️ Remove the iframe from the parent document if (window.parent.document.getElementById("frame-BlockBot")) { window.parent.document.getElementById("frame-BlockBot").remove(); window.document.getElementById("gameContainer").remove(); } else { } } } else { console.warn('We are not in an iframe', window.parent); window.addEventListener("testurl", (event) => { console.warn("testurl", event) }); }
         }
