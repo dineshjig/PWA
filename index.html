@@ -657,35 +657,6 @@
       }
     }
 
-    /* Large phones (429px - 767px) */
-    @media (min-width: 429px) and (max-width: 767px) {
-      :root {
-        --splash-star-size: 95px;
-        --splash-glow-size: 115px;
-        --splash-glow-blur: 32px;
-
-        --orbit-container-size: 340px;
-        --orbit-outer-radius: 170px;
-        --orbit-inner-radius: 102px;
-        --orbit-border-width: 1.8px;
-
-        --center-star-size: 68px;
-        --center-star-shadow: 0 7px 26px rgba(0, 0, 0, 0.1);
-
-        --icon-size: 45px;
-        --icon-font-size: 24px;
-        --icon-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-
-        --powered-by-width: 210px;
-        --loading-gif-size: 85px;
-
-        --spacing-xs: 7px;
-        --spacing-sm: 14px;
-        --spacing-md: 20px;
-        --spacing-lg: 28px;
-        --spacing-xl: 40px;
-      }
-    }
 
     /* Tablets (768px - 1024px) */
     @media (min-width: 768px) and (max-width: 3000px) {
@@ -898,6 +869,7 @@
 
           const host = window.location.host;
           if (x_auth === "success") {
+            window.history.replaceState({}, document.title, window.location.pathname);
             window.open("https://x.com/intent/follow?screen_name=auctionx_live", "_blank");
           } else {
             console.log("No x_auth parameter found in URL");
