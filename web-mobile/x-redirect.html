@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>X Redirect</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    Redirecting to X Login…
+</body>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const authUrl = params.get("authUrl");
+
+    console.log("Auth URL received:", authUrl);
+
+    if (authUrl) {
+        setTimeout(() => {
+            window.location.href = authUrl; // redirect to Twitter Auth Login
+        }, 300);
+    } else {
+        document.body.innerHTML = "Error: Invalid Auth URL!";
+    }
+</script>
+
+</html>

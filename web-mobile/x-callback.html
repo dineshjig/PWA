@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>X Callback</title>
+</head>
+
+<body style="background:#000;color:#FFF;text-align:center;padding-top:40vh;">
+    Verifying follow status…
+</body>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("x_auth");
+    const message = params.get("message");
+
+    console.log("Callback:", status, message);
+
+    // Send data back to Cocos main window
+    window.parent.postMessage(
+        { x_auth: status, message: message },
+        "*"
+    );
+
+    setTimeout(() => {
+        window.close();
+    }, 800);
+</script>
+
+</html>
